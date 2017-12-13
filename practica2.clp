@@ -62,14 +62,26 @@
 (defclass Coordenadas "Clase coordenadas que contiene información sobre los ejes X e Y de otra clase."
 	(is-a USER)
 	(role concrete)
-	(single-slot X
-		(type INTEGER)
-;+		(cardinality 0 1)
-		(create-accessor read-write)))
 	(single-slot Y
 		(type INTEGER)
 ;+		(cardinality 0 1)
 		(create-accessor read-write))
+	(single-slot X
+		(type INTEGER)
+;+		(cardinality 0 1)
+		(create-accessor read-write)))
+
+(defclass Recomendacion
+	(is-a USER)
+	(role concrete)
+	(single-slot vivienda
+		(type INSTANCE)
+;+		(allowed-classes Vivienda)
+;+		(cardinality 0 1)
+		(create-accessor read-write))
+	(single-slot justificacion
+		(type STRING)
+		(create-accessor read-write)))
 
 ;;-------------------------------------------------------------------------------------------------------------
 ;;                      INSTANCIAS
@@ -95,33 +107,40 @@
 (definstances viviendas
 	([ontologia_Class19] of  Vivienda
 
-		(Location [ontologia_Class16])
-		(Price 200.0))
+		(location [ontologia_Class16])
+		(price 200.0))
 
 	([ontologia_Class20] of  Vivienda
 
-		(Location [ontologia_Class17])
-		(Price 500.0))
+		(location [ontologia_Class17])
+		(price 500.0))
 
 	([ontologia_Class21] of  Vivienda
 
-		(Location [ontologia_Class18])
-		(Price 1000.0))
+		(location [ontologia_Class18])
+		(price 1000.0))
 )
 
 ;;-------------------------------------------------------------------------------------------------------------
 ;;                      MAIN
 ;;-------------------------------------------------------------------------------------------------------------
 
-(defmodule MAIN (export ?ALL))
+;(defmodule MAIN (export ?ALL))
 
 ;;-------------------------------------------------------------------------------------------------------------
 ;;                      TEMPLATES
 ;;-------------------------------------------------------------------------------------------------------------
 
+;; Preferencias del usuario
 (deftemplate usuario
 	(slot precio-minimo (type INTEGER))
 	(slot precio-maximo (type INTEGER))
+)
+
+;; Lista de recomendaciones sin orden
+(deftemplate lista-rec
+	(multislot recomendaciones (type INSTANCE))
+;+	(allowed-classes Recomendacion)
 )
 
 ;;-------------------------------------------------------------------------------------------------------------
@@ -129,7 +148,7 @@
 ;;-------------------------------------------------------------------------------------------------------------
 
 ;; Imprime las coordendas (X, Y)
-(defmessage-handler Coordinates imprimir ()
+(defmessage-handler Coordenadas imprimir ()
 	(format t "(%s, %s)" ?self:X ?self:Y)
 )
 
@@ -141,6 +160,12 @@
 	(format t "Formato: %s" (class ?self))
 	(printout t "-----------------------------------" crlf)
 	(printout t crlf)
+)
+
+;; Imprime los datos de una Recomendacion
+(defmessage-handler Recomendacion imprimir ()
+	(send ?self:vivienda imprimir)
+	(printout t ?self:justificacion)
 )
 
 ;;-------------------------------------------------------------------------------------------------------------
@@ -249,12 +274,43 @@
 ;;                      REGLAS
 ;;-------------------------------------------------------------------------------------------------------------
 
+;; GENERACIÓN DE RECOMENDACIONES
+
+(defrule crea-lista-recomendaciones "crea una lista de recomendaciones"
+	(not (lista-rec))
+	=>
+	(assert (lista-rec))
+)
+
+(defrule add-recomendacion "Añade una recomendación a la lista de recomendaciones"
+	?rec <- (object (is-a Recomendacion))
+	?hecho <- (lista-rec (recomendaciones $?lista))
+	(test (not (member$ ?rec $?lista)))
+	=>
+	(bind $?lista (insert$ $?lista (+ 1 (length$ $?lista)) ?rec))
+	(modify ?hecho (recomendaciones $?lista))
+)
+
+; FIXME
+(defrule add-viviendas "Se añaden todas las viviendas, luego se filtran"
+	(not (viviendas-added))
+	=>
+	(bind $?lista (find-all-instances ((?inst Vivienda)) TRUE))
+	(progn$ (?i ?lista)
+		(make-instance (gensym) of Recomendacion (vivienda ?i) (justificacion "justificacion"))
+		(retract ?i)
+	)
+	(assert viviendas-added)
+)
+
+;; MAIN
+
 (defrule comienzo "regla inicial"
 	(initial-fact)
 	=>
 	(printout t crlf)
 	(printout t "--------------------------------------------------------------" crlf)
-	(printout t "------------ Sistema de Recomendacion de Viviendas -----------" crlf)
+	(printout t "------------ Sistema de Recomendación de Viviendas -----------" crlf)
 	(printout t "--------------------------------------------------------------" crlf)
 	(printout t crlf)
 	(assert (inicio))
@@ -270,7 +326,15 @@
 
 (defrule mostrar-viviendas "muestra las viviendas recomendadas"
 	(inicio)
-	?u <- (usuario ?minimo ?maximo)
+	?u <- (usuario (precio-minimo ?minimo) (precio-maximo ?maximo))
+	(lista-rec (recomendaciones $?lista))
 	=>
-;TODO	()
+	(printout t crlf)
+	(printout t "Todas las posibles recomendaciones: " crlf)
+	(printout t "----------------------------------- " crlf)
+	; TODO
+	(progn$ (?v $?lista)
+		(send ?v imprimir)
+	)
+	(printout t crlf)
 )
