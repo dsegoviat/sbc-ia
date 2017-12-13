@@ -1,0 +1,34 @@
+; Tue Dec 12 18:01:10 CET 2017
+; 
+;+ (version "3.4.8")
+;+ (build "Build 629")
+
+([ontologia_Class16] of  Coordinates
+
+	(X 20)
+	(Y 30))
+
+([ontologia_Class17] of  Coordinates
+
+	(X 50)
+	(Y 50))
+
+([ontologia_Class18] of  Coordinates
+
+	(X 99)
+	(Y 88))
+
+([ontologia_Class19] of  Vivienda
+
+	(Location [ontologia_Class16])
+	(Price 200.0))
+
+([ontologia_Class20] of  Vivienda
+
+	(Location [ontologia_Class17])
+	(Price 500.0))
+
+([ontologia_Class21] of  Vivienda
+
+	(Location [ontologia_Class18])
+	(Price 1000.0))
