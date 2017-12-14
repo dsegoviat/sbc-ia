@@ -87,7 +87,7 @@
         (create-accessor read-write))
     (single-slot tipo
         (type SYMBOL)
-        (allowed-values flat duplex singlefamily)
+        (allowed-values piso duplex unifamiliar)
 ;+      (cardinality 1 1)
         (create-accessor read-write))
     (single-slot piscina-comunitaria
@@ -142,7 +142,7 @@
         (create-accessor read-write))
     (single-slot tipo
         (type SYMBOL)
-        (allowed-values flat duplex singlefamily)
+        (allowed-values piso duplex unifamiliar)
 ;+      (cardinality 1 1)
         (create-accessor read-write))
     (single-slot electrodomesticos
@@ -309,7 +309,7 @@
         (electrodomesticos TRUE)
         (calefaccion TRUE)
         (sol todo-el-dia)
-        (tipo singlefamily)
+        (tipo unifamiliar)
         (localizacion [ontologia_Class17])
         (parking TRUE)
         (mascotas-permitidas FALSE)
@@ -328,7 +328,7 @@
         (electrodomesticos FALSE)
         (calefaccion FALSE)
         (sol todo-el-dia)
-        (tipo flat)
+        (tipo piso)
         (localizacion [ontologia_Class18])
         (parking FALSE)
         (mascotas-permitidas TRUE)
