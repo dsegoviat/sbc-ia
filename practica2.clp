@@ -233,7 +233,7 @@
 ;+      (cardinality 1 1)
         (create-accessor read-write)))
 
-(defclass Coordenadas "Clase coordenadas que contiene información sobre los ejes X e Y de otra clase."
+(defclass Coordenadas "Clase coordenadas que contiene información sobre los ejes X e Y de otra clase"
     (is-a USER)
     (role concrete)
     (single-slot Y
@@ -245,20 +245,19 @@
 ;+      (cardinality 0 1)
         (create-accessor read-write)))
 
-(defclass Recomendacion
+(defclass Recomendacion "Clase para validar requerimientos y preferencias"
 	(is-a USER)
 	(role concrete)
 	(single-slot vivienda
 		(type INSTANCE)
 ;+		(allowed-classes Vivienda)
 		(create-accessor read-write))
-	(single-slot justificacion
-		(type STRING)
-		(create-accessor read-write))
-	(single-slot requerimientos-no-cumplidos
-		(type INTEGER)
-		(default 0)
-		(create-accessor read-write)))
+	(multislot caracteristicas-no-recomendables
+        (type STRING)
+        (create-accessor read-write))
+    (multislot caracteristicas-muy-recomendables
+        (type STRING)
+        (create-accessor read-write)))
 
 ;;-------------------------------------------------------------------------------------------------------------
 ;;                      INSTANCIAS
@@ -376,12 +375,38 @@
 (deftemplate MAIN::usuario
 	(slot precio-minimo (type INTEGER))
 	(slot precio-maximo (type INTEGER))
+    (slot precio-estricto (type SYMBOL)
+        (allowed-values FALSE TRUE))
 )
 
-;; Lista de recomendaciones sin orden
-(deftemplate MAIN::lista-rec
+;; Lista de recomendaciones sin orden que se procesan y todavía no han sido descartadas
+(deftemplate MAIN::lista-validas
+    (multislot recomendaciones (type INSTANCE))
+;+  (allowed-classes Recomendacion)
+)
+
+;; Lista de recomendaciones sin orden que no son ni siquiera parcialmente adecuadas (más de 2 restricciones que no se cumplen)
+(deftemplate MAIN::lista-descartadas
 	(multislot recomendaciones (type INSTANCE))
 ;+	(allowed-classes Recomendacion)
+)
+
+;; Lista de recomendaciones clasificadas como adecuadas
+(deftemplate MAIN::lista-adecuadas
+    (multislot recomendaciones (type INSTANCE))
+;+  (allowed-classes Recomendacion)
+)
+
+;; Lista de recomendaciones clasificadas como parcialmente adecuadas
+(deftemplate MAIN::lista-parcialmente-adecuadas
+    (multislot recomendaciones (type INSTANCE))
+;+  (allowed-classes Recomendacion)
+)
+
+;; Lista de recomendaciones clasificadas como muy recomendables
+(deftemplate MAIN::lista-muy-recomendables
+    (multislot recomendaciones (type INSTANCE))
+;+  (allowed-classes Recomendacion)
 )
 
 ;;-------------------------------------------------------------------------------------------------------------
@@ -404,9 +429,33 @@
 (defmessage-handler MAIN::Recomendacion imprimir ()
 	(printout t "-----------------------------------" crlf)
     (send ?self:vivienda imprimir)
-    (format t "Justificación: %s%n" ?self:justificacion)
+    (bind ?cantidad-no-recomendables (length$ ?self:caracteristicas-no-recomendables))
+    (bind ?cantidad-muy-recomendables (length$ ?self:caracteristicas-muy-recomendables))
+    (if (> ?cantidad-no-recomendables 0) then
+        (printout t "Requisitos no cumplidos pero que podrían ser aceptables:" crlf)
+        (progn$ (?caracteristica ?self:caracteristicas-no-recomendables)
+            (printout t "- " ?caracteristica crlf)
+        )
+    )
+    (if (> ?cantidad-muy-recomendables 0) then
+        (printout t "Características positivas:" crlf)
+        (progn$ (?caracteristica ?self:caracteristicas-muy-recomendables)
+            (printout t "- " ?caracteristica crlf)
+        )
+    )
     (printout t "-----------------------------------" crlf)
-    (printout t crlf)
+)
+
+(defmessage-handler MAIN::Recomendacion muy-recomendable (?justificacion)
+    (slot-insert$ ?self caracteristicas-muy-recomendables (+ (length$ ?self:caracteristicas-muy-recomendables) 1) ?justificacion)
+)
+
+(defmessage-handler MAIN::Recomendacion parcialmente-recomendable (?justificacion)
+    (bind ?cantidad (+ 1 (length$ ?self:caracteristicas-no-recomendables)))
+    (slot-insert$ ?self caracteristicas-no-recomendables ?cantidad ?justificacion)
+    (if (> ?cantidad 2) then
+        (assert (invalida ?self))
+    )
 )
 
 ;;-------------------------------------------------------------------------------------------------------------
@@ -454,7 +503,7 @@
        else FALSE)
 )
 
-;;; Funcion para hacer una pregunta con respuesta numerica unica
+;;; Funcion para hacer una pregunta con respuesta numerica única
 (deffunction MAIN::pregunta-numerica (?pregunta ?rangini)
 	(format t "%s [Mínimo %d] " ?pregunta ?rangini)
 	(bind ?respuesta (read))
@@ -465,7 +514,7 @@
 	?respuesta
 )
 
-;;; Funcion para hacer una pregunta con respuesta numerica unica
+;;; Funcion para hacer una pregunta con respuesta numerica única
 (deffunction MAIN::pregunta-numerica-rango (?pregunta ?rangini ?rangfi)
 	(format t "%s [%d, %d] " ?pregunta ?rangini ?rangfi)
 	(bind ?respuesta (read))
@@ -476,7 +525,7 @@
 	?respuesta
 )
 
-;;; Funcion para hacer pregunta con indice de respuestas posibles
+;;; Funcion para hacer pregunta con índice de respuestas posibles
 (deffunction MAIN::pregunta-indice (?pregunta $?valores-posibles)
     (bind ?linea (format nil "%s" ?pregunta))
     (printout t ?linea crlf)
@@ -488,7 +537,7 @@
 	?respuesta
 )
 
-;;; Funcion para hacer una pregunta multi-respuesta con indices
+;;; Funcion para hacer una pregunta multi-respuesta con úndices
 (deffunction MAIN::pregunta-multi (?pregunta $?valores-posibles)
     (bind ?linea (format nil "%s" ?pregunta))
     (printout t ?linea crlf)
@@ -511,13 +560,25 @@
     ?lista
 )
 
+;;; Función para no volvernos locos
+(deffunction MAIN::debug (?msg)
+    (printout t "[DEBUG] " ?msg crlf)
+)
+
+;;; Función para no volvernos muy locos
+(deffunction MAIN::debug-instance (?msg ?obj)
+    (printout t "[DEBUG] " ?msg ":" crlf)
+    (send ?obj imprimir)
+)
+
+
 ;;-------------------------------------------------------------------------------------------------------------
 ;;                      REGLAS
 ;;-------------------------------------------------------------------------------------------------------------
 
 ;; MAIN
 
-(defrule MAIN::comienzo "regla inicial"
+(defrule MAIN::comienzo "Regla inicial"
     (initial-fact)
     =>
     (printout t crlf)
@@ -530,15 +591,16 @@
 
 ;; RECOPILACION DE INFORMACIÓN
 
-(defrule recopilacion::preguntar-precio "pregunta el rango de precios que le interesa al usuario"
+(defrule recopilacion::preguntar-precio "Pregunta el rango de precios que le interesa al usuario"
     (not (usuario))
     =>
     (bind ?minimo (pregunta-numerica "Escoge el precio mínimo:" 1))
     (bind ?maximo (pregunta-numerica "Escoge el precio máximo:" ?minimo))
-    (assert (usuario (precio-minimo ?minimo) (precio-maximo ?maximo)))
+    (bind ?precio-estricto (not (pregunta-si-no "¿Estarías dispuesto a pagar más si la oferta lo merece?")))
+    (assert (usuario (precio-minimo ?minimo) (precio-maximo ?maximo) (precio-estricto ?precio-estricto)))
 )
 
-(defrule recopilacion::pasar_modulo_procesado "Pasa al modulo de procesado de información"
+(defrule recopilacion::pasar_modulo_procesado "Pasa al módulo de procesado de información"
     (declare (salience -1))
     =>
     (focus procesado)
@@ -546,31 +608,89 @@
 
 ;; PROCESADO DE INFORMACIÓN
 
-(defrule procesado::add-viviendas "Se añaden todas las viviendas, luego se filtran"
+(defrule procesado::crea-lista-validas "Se crea una lista de recomendaciones válidas"
+    (not (lista-validas))
+    =>
+    (assert (lista-validas))
+)
+
+(defrule procesado::crea-lista-descartadas "Se crea una lista de recomendaciones descartadas"
+    (not (lista-descartadas))
+    =>
+    (assert (lista-descartadas))
+)
+
+(defrule procesado::crear-recomendaciones "Se crean todas las recomendaciones a partir de las viviendas en la lista de recomendaciones válidas"
     (not (added-viviendas))
     =>
-    (bind $?lista (find-all-instances ((?inst Vivienda)) TRUE))
-    (progn$ (?curr ?lista)
-        (make-instance (gensym) of Recomendacion (vivienda ?curr) (justificacion "justificacion"))
+    (bind $?viviendas (find-all-instances ((?inst Vivienda)) TRUE))
+    (progn$ (?curr $?viviendas)
+        (make-instance (gensym) of Recomendacion (vivienda ?curr))
     )
     (assert (added-viviendas))
 )
 
-(defrule procesado::filtrar-precio "Elimina las recomendaciones que no cumplen el precio"
-    (inicio)
-    ?u <- (usuario (precio-minimo ?minimo) (precio-maximo ?maximo))
-    ?rec <- (object (is-a Recomendacion) (vivienda ?v) (requerimientos-no-cumplidos ?no-reqs))
-    (test (or (> ?minimo (send ?v get-precio)) (< ?maximo (send ?v get-precio))))
+(defrule procesado::validar-recomendacion "Añade una recomendación válida a la lista de recomendaciones válidas"
+    ?rec <- (object (is-a Recomendacion))
+    ?hecho <- (lista-validas (recomendaciones $?validas))
+    (test (not (member$ ?rec $?validas)))
+    (not (invalida ?rec))
+    =>
+    (bind $?validas (insert$ $?validas (+ 1 (length$ $?validas)) ?rec))
+    (modify ?hecho (recomendaciones $?validas))
+)
+
+(defrule procesado::descartar-recomendacion "Añade una recomendación no válida a la lista de recomendaciones descartadas"
+    ?rec <- (object (is-a Recomendacion))
+    ?hecho-validas <- (lista-validas (recomendaciones $?validas))
+    ?hecho-descartadas <- (lista-descartadas (recomendaciones $?descartadas))
+    (invalida ?rec)
+    (test (member$ ?rec $?validas))
+    (test (not (member$ ?rec $?descartadas)))
+    =>
+    ;; Añadir a la lista de descartadas
+    (bind $?descartadas (insert$ $?descartadas (+ 1 (length$ $?descartadas)) ?rec))
+    (modify ?hecho-descartadas (recomendaciones $?descartadas))
+
+    ;; Borrar de la lista de válidas
+    (bind $?validas (delete-member$ $?validas ?rec))
+    (modify ?hecho-validas (recomendaciones $?validas))
+)
+
+(defrule procesado::precio-no-recomendable "El precio es demasiado caro"
+    ?u <- (usuario (precio-minimo ?minimo) (precio-maximo ?maximo) (precio-estricto ?estricto))
+    ?rec <- (object (is-a Recomendacion) (vivienda ?v))
+    ;; El precio es demasiado caro cuando es estricto y se pasa del máximo o bien cuando no es estricto pero supera el 30% del máximo
+    (test (eq TRUE (or (and ?estricto (> (send ?v get-precio) ?maximo)) (and (not ?estricto) (> (send ?v get-precio) (* 1.3 ?maximo))))))
     (not (filtrar-precio ?rec))
     =>
-    (send ?rec put-requerimientos-no-cumplidos (+ 1 ?no-reqs))
-    (if (eq 3 ?no-reqs) then
-        (send ?rec delete)
-    )
+    (assert (invalida ?rec))
     (assert (filtrar-precio ?rec))
 )
 
-(defrule procesado::pasar_modulo_generacion "Pasa al modulo de generación de resultados"
+(defrule procesado::precio-muy-recomendable "El precio es muy recomendable"
+    ?u <- (usuario (precio-minimo ?minimo) (precio-maximo ?maximo) (precio-estricto ?estricto))
+    ?rec <- (object (is-a Recomendacion) (vivienda ?v))
+    ;; El precio es bajo cuando es inferior a la mitad del rango
+    (test (eq TRUE (<= (send ?v get-precio) (/ (+ ?maximo ?minimo) 2))))
+    (not (filtrar-precio ?rec))
+    =>
+    (send ?rec muy-recomendable "Precio bajo")
+    (assert (filtrar-precio ?rec))
+)
+
+(defrule procesado::precio-parcialmente-recomendable "El precio podría ser adecuado"
+    ?u <- (usuario (precio-minimo ?minimo) (precio-maximo ?maximo) (precio-estricto ?estricto))
+    ?rec <- (object (is-a Recomendacion) (vivienda ?v))
+    ;; El precio es parcialmente adecuado cuando no es estricto y siendo superior al máximo no supera un 30% del máximo
+    (test (eq TRUE (and (not ?estricto) (> (send ?v get-precio) ?maximo) (<= (send ?v get-precio) (* 1.3 ?maximo)))))
+    (not (filtrar-precio ?rec))
+    =>
+    (send ?rec parcialmente-recomendable "Precio un poco por encima del máximo")
+    (assert (filtrar-precio ?rec))
+)
+
+(defrule procesado::pasar-modulo-generacion "Pasa al módulo de generación de resultados"
     (declare (salience -1))
     =>
     (focus generacion)
@@ -578,22 +698,86 @@
 
 ;; GENERACIÓN DE RESULTADOS
 
-(defrule generacion::crea-lista-recomendaciones "crea una lista de recomendaciones"
-	(not (lista-rec))
-	=>
-	(assert (lista-rec))
+;; ADECUADAS
+
+(defrule generacion::crea-lista-adecuadas "Se crea una lista de recomendaciones adecuadas"
+    (not (lista-adecuadas))
+    =>
+    (assert (lista-adecuadas))
 )
 
-(defrule generacion::add-recomendacion "Añade una recomendación a la lista de recomendaciones"
-	?rec <- (object (is-a Recomendacion))
-	?hecho <- (lista-rec (recomendaciones $?lista))
-	(test (not (member$ ?rec $?lista)))
-	=>
-	(bind $?lista (insert$ $?lista (+ 1 (length$ $?lista)) ?rec))
-	(modify ?hecho (recomendaciones $?lista))
+(defrule generacion::crear-adecuada "Añade una recomendación válida a la lista de recomendaciones adecuadas"
+    ?rec <- (object (is-a Recomendacion))
+    ?hecho-adecuadas <- (lista-adecuadas (recomendaciones $?adecuadas))
+    (test (not (member$ ?rec $?adecuadas)))
+    (adecuada ?rec)
+    =>
+    ;; Añadir a la lista de adecuadas
+    (bind $?adecuadas (insert$ $?adecuadas (+ 1 (length$ $?adecuadas)) ?rec))
+    (modify ?hecho-adecuadas (recomendaciones $?adecuadas))
 )
 
-(defrule procesado::pasar_modulo_presentacion "Pasa al modulo de presentación de resultados"
+;; PARCIALMENTE ADECUADAS
+
+(defrule generacion::crea-lista-parcialmente-adecuadas "Se crea una lista de recomendaciones parcialmente adecuadas"
+    (not (lista-parcialmente-adecuadas))
+    =>
+    (assert (lista-parcialmente-adecuadas))
+)
+
+(defrule generacion::crear-parcialmente-adecuada "Añade una recomendación válida a la lista de recomendaciones parcialmente adecuadas"
+    ?rec <- (object (is-a Recomendacion))
+    ?hecho-parcialmente-adecuadas <- (lista-parcialmente-adecuadas (recomendaciones $?parcialmente-adecuadas))
+    (test (not (member$ ?rec $?parcialmente-adecuadas)))
+    (parcialmente-adecuada ?rec)
+    =>
+    ;; Añadir a la lista de parcialmente-adecuadas
+    (bind $?parcialmente-adecuadas (insert$ $?parcialmente-adecuadas (+ 1 (length$ $?parcialmente-adecuadas)) ?rec))
+    (modify ?hecho-parcialmente-adecuadas (recomendaciones $?parcialmente-adecuadas))
+)
+
+;; MUY RECOMENDABLES
+
+(defrule generacion::crea-lista-muy-recomendables "Se crea una lista de recomendaciones muy recomendables"
+    (not (lista-muy-recomendables))
+    =>
+    (assert (lista-muy-recomendables))
+)
+
+(defrule generacion::crear-muy-recomendable "Añade una recomendación válida a la lista de recomendaciones muy recomendables"
+    ?rec <- (object (is-a Recomendacion))
+    ?hecho-muy-recomendable <- (lista-muy-recomendables (recomendaciones $?muy-recomendables))
+    (test (not (member$ ?rec $?muy-recomendables)))
+    (muy-recomendable ?rec)
+    =>
+    ;; Añadir a la lista de muy-recomendables
+    (bind $?muy-recomendables (insert$ $?muy-recomendables (+ 1 (length$ $?muy-recomendables)) ?rec))
+    (modify ?hecho-muy-recomendable (recomendaciones $?muy-recomendables))
+)
+
+;; CLASIFICACIÓN
+
+(defrule generacion::clasificar-validas "Clasifica las recomendaciones válidas en 'Muy recomendable', 'Adecuada' o 'Parcialmente adecuada'"
+    ?rec <- (object (is-a Recomendacion))
+    ?hecho-validas <- (lista-validas (recomendaciones $?validas))
+    (test (member$ ?rec $?validas))
+    (not (clasificada ?rec))
+    =>
+    (bind ?cantidad-no-recomendables (length$ (send ?rec get-caracteristicas-no-recomendables)))
+    (bind ?cantidad-muy-recomendables (length$ (send ?rec get-caracteristicas-muy-recomendables)))
+    (if (> ?cantidad-no-recomendables 0) then
+        (assert (parcialmente-adecuada ?rec))
+    else
+        (if (> ?cantidad-muy-recomendables 0) then
+            (assert (muy-recomendable ?rec))
+        else
+            (assert (adecuada ?rec))
+        )
+    )
+    (assert (clasificada ?rec))
+)
+
+(defrule generacion::pasar-modulo-presentacion "Pasa al módulo de presentación de resultados"
     (declare (salience -1))
     =>
     (focus presentacion)
@@ -601,15 +785,39 @@
 
 ;; PRESENTACIÓN DE RECOMENDACIONES
 
-(defrule presentacion::mostrar-viviendas "muestra las viviendas recomendadas"
+(defrule presentacion::mostrar-viviendas "Muestra las viviendas recomendadas"
+    ?hecho-muy-recomendable <- (lista-muy-recomendables (recomendaciones $?muy-recomendables))
+    ?hecho-adecuadas <- (lista-adecuadas (recomendaciones $?adecuadas))
+    ?hecho-parcialmente-adecuadas <- (lista-parcialmente-adecuadas (recomendaciones $?parcialmente-adecuadas))
+    ?hecho-validas <- (lista-validas (recomendaciones $?validas))
+    ?hecho-descartadas <- (lista-descartadas (recomendaciones $?descartadas))
     (not (fin))
 	=>
-	(printout t crlf)
-	(printout t "Estas son nuestras recomendaciones: " crlf crlf)
-	(bind $?lista (find-all-instances ((?inst Recomendacion)) TRUE))
-	(progn$ (?rec $?lista)
-		(send ?rec imprimir)
-	)
-	(printout t crlf)
+    (if (eq (length$ $?validas) 0) then
+        (printout t crlf "No tenemos ninguna recomendación que cumpla con los requisitos indicados pero quizás te puedan interesar algunas de estas viviendas:" crlf)
+        (progn$ (?rec $?descartadas)
+            (send ?rec imprimir)
+        )
+    else
+        (printout t crlf "Estas son nuestras recomendaciones: " crlf)
+        (if (> (length$ $?muy-recomendables) 0) then
+            (printout t crlf "MUY RECOMENDABLES" crlf)
+            (progn$ (?rec $?muy-recomendables)
+                (send ?rec imprimir)
+            )
+        )
+        (if (> (length$ $?adecuadas) 0) then
+            (printout t crlf "ADECUADAS" crlf)
+            (progn$ (?rec $?adecuadas)
+                (send ?rec imprimir)
+            )
+        )
+        (if (> (length$ $?parcialmente-adecuadas) 0) then
+            (printout t crlf "PARCIALMENTE ADECUADAS" crlf)
+            (progn$ (?rec $?parcialmente-adecuadas)
+                (send ?rec imprimir)
+            )
+        )
+    )
     (assert (fin))
 )
