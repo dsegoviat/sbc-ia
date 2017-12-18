@@ -1043,6 +1043,7 @@
     (format t "%nElectrodomesticos: %s" ?self:electrodomesticos)
     (format t "%nAire acondicionado: %s" ?self:aire-acondicionado)
     (format t "%nCalefacción: %s" ?self:calefaccion)
+    (format t "%nPiscina: %s" ?self:piscina-comunitaria)
     (printout t crlf)
 )
 
@@ -1294,6 +1295,16 @@
     (assert (calefaccion-aire-acondicionado-preguntado))
 )
 
+(defrule recopilacion::preguntar-piscina-comunitaria "Pregunta si el usuario quiere una vivienda con acceso a la piscina comunitaria"
+    (declare (salience -7))
+    ?usuario <- (usuario)
+    (not (piscina-comunitaria-preguntado))
+    =>
+    (bind ?piscina-comunitaria (pregunta-si-no "¿Quiere que la vivienda tenga piscina comunitaria o propia?"))
+    (modify ?usuario (piscina-comunitaria ?piscina-comunitaria))
+    (assert (piscina-comunitaria-preguntado))
+)
+
 (defrule recopilacion::pasar-modulo-procesado "Pasa al módulo de procesado de información"
     (declare (salience -100))
     =>
@@ -1506,6 +1517,31 @@
     =>
     (send ?rec muy-recomendable "Tiene calefacción o aire acondicionado aunque no lo haya pedido")
     (assert (filtrar-calefaccion-aire-acondicionado ?rec))
+)
+
+;; PISCINA COMUNITARIA
+
+(defrule procesado::descartar-piscina-comunitaria "No se cumple las restricción de acceso a la piscina comunitaria o piscina propia"
+    ?u <- (usuario (piscina-comunitaria ?piscina-comunitaria))
+    ?rec <- (object (is-a Recomendacion) (vivienda ?v))
+    ;; Ha pedido acceso a la piscina comunitaria y no lo tiene
+    (test (eq TRUE (and (eq TRUE ?piscina-comunitaria) (not (send ?v get-piscina-comunitaria)))))
+    (not (filtrar-piscina-comunitaria ?rec))
+    =>
+    (send ?rec parcialmente-recomendable "No tiene piscina")
+    (assert (filtrar-piscina-comunitaria ?rec))
+)
+
+(defrule procesado::piscina-comunitaria-muy-recomendable "Tiene acceso a la piscina comunitaria aunque no lo haya pedido"
+    (declare (salience -1))
+    ?u <- (usuario (piscina-comunitaria ?piscina-comunitaria))
+    ?rec <- (object (is-a Recomendacion) (vivienda ?v))
+    ;; No ha pedido  acceso a la piscina comunitaria pero lo tiene
+    (test (eq TRUE (and (eq FALSE ?piscina-comunitaria) (eq TRUE (send ?v get-piscina-comunitaria)))))
+    (not (filtrar-piscina-comunitaria ?rec))
+    =>
+    (send ?rec muy-recomendable "Tiene piscina aunque no lo haya pedido")
+    (assert (filtrar-piscina-comunitaria ?rec))
 )
 
 (defrule procesado::pasar-modulo-generacion "Pasa al módulo de generación de resultados"
