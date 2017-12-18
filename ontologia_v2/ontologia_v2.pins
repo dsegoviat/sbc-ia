@@ -1,0 +1,284 @@
+; Mon Dec 18 17:07:41 CET 2017
+; 
+;+ (version "3.4.8")
+;+ (build "Build 629")
+
+([ontologia_Class10] of  Vivienda
+
+	(adaptada-mobilidad-reducida FALSE)
+	(aire-acondicionado TRUE)
+	(altura 3)
+	(altura-maxima 8)
+	(amueblado TRUE)
+	(area 3.0)
+	(ascensor TRUE)
+	(balcon TRUE)
+	(buenas-vistas TRUE)
+	(calefaccion TRUE)
+	(dormitorios-dobles 1)
+	(dormitorios-simples 3)
+	(electrodomesticos TRUE)
+	(localizacion [ontologia_Class11])
+	(mascotas-permitidas TRUE)
+	(parking FALSE)
+	(piscina-comunitaria FALSE)
+	(precio 500.0)
+	(sol manana)
+	(terraza TRUE)
+	(tipo piso))
+
+([ontologia_Class10016] of  Vivienda
+
+	(adaptada-mobilidad-reducida FALSE)
+	(aire-acondicionado FALSE)
+	(altura 12)
+	(altura-maxima 12)
+	(amueblado TRUE)
+	(area 300.0)
+	(ascensor TRUE)
+	(balcon TRUE)
+	(buenas-vistas TRUE)
+	(calefaccion TRUE)
+	(dormitorios-dobles 2)
+	(dormitorios-simples 2)
+	(electrodomesticos TRUE)
+	(localizacion [ontologia_Class10018])
+	(mascotas-permitidas TRUE)
+	(parking FALSE)
+	(piscina-comunitaria TRUE)
+	(precio 400.0)
+	(sol todo-el-dia)
+	(terraza FALSE)
+	(tipo duplex))
+
+([ontologia_Class10018] of  Coordinates
+
+	(X 0)
+	(Y 12))
+
+([ontologia_Class10019] of  Vivienda
+
+	(adaptada-mobilidad-reducida FALSE)
+	(aire-acondicionado FALSE)
+	(altura 10)
+	(altura-maxima 10)
+	(amueblado FALSE)
+	(area 400.0)
+	(ascensor FALSE)
+	(balcon TRUE)
+	(buenas-vistas TRUE)
+	(calefaccion FALSE)
+	(dormitorios-dobles 1)
+	(dormitorios-simples 5)
+	(electrodomesticos TRUE)
+	(localizacion [ontologia_Class10020])
+	(mascotas-permitidas FALSE)
+	(parking TRUE)
+	(piscina-comunitaria TRUE)
+	(precio 800.0)
+	(sol todo-el-dia)
+	(terraza TRUE)
+	(tipo piso))
+
+([ontologia_Class10020] of  Coordinates
+
+	(X 2)
+	(Y 32))
+
+([ontologia_Class11] of  Coordinates
+
+	(X 12)
+	(Y 84))
+
+([ontologia_Class12] of  Vivienda
+
+	(adaptada-mobilidad-reducida FALSE)
+	(aire-acondicionado FALSE)
+	(altura 10)
+	(altura-maxima 10)
+	(amueblado FALSE)
+	(area 200.0)
+	(ascensor FALSE)
+	(balcon FALSE)
+	(buenas-vistas TRUE)
+	(calefaccion TRUE)
+	(dormitorios-dobles 1)
+	(dormitorios-simples 2)
+	(electrodomesticos FALSE)
+	(localizacion [ontologia_Class13])
+	(mascotas-permitidas TRUE)
+	(parking FALSE)
+	(piscina-comunitaria TRUE)
+	(precio 150.0)
+	(terraza TRUE)
+	(tipo piso))
+
+([ontologia_Class13] of  Coordinates
+
+	(X 22)
+	(Y 92))
+
+([ontologia_Class14] of  Vivienda
+
+	(adaptada-mobilidad-reducida TRUE)
+	(aire-acondicionado TRUE)
+	(amueblado TRUE)
+	(area 600.0)
+	(ascensor FALSE)
+	(balcon FALSE)
+	(buenas-vistas TRUE)
+	(calefaccion TRUE)
+	(dormitorios-dobles 5)
+	(dormitorios-simples 4)
+	(electrodomesticos TRUE)
+	(localizacion [ontologia_Class15])
+	(mascotas-permitidas FALSE)
+	(parking TRUE)
+	(piscina-comunitaria TRUE)
+	(precio 2500.0)
+	(sol todo-el-dia)
+	(terraza FALSE)
+	(tipo unifamiliar))
+
+([ontologia_Class15] of  Coordinates
+
+	(X 15)
+	(Y 24))
+
+([ontologia_Class16] of  Coordinates
+
+	(X 20)
+	(Y 30))
+
+([ontologia_Class17] of  Coordinates
+
+	(X 50)
+	(Y 50))
+
+([ontologia_Class18] of  Coordinates
+
+	(X 99)
+	(Y 88))
+
+([ontologia_Class19] of  Vivienda
+
+	(adaptada-mobilidad-reducida TRUE)
+	(aire-acondicionado TRUE)
+	(altura 1)
+	(altura-maxima 10)
+	(amueblado TRUE)
+	(area 200.0)
+	(ascensor TRUE)
+	(balcon FALSE)
+	(buenas-vistas FALSE)
+	(calefaccion TRUE)
+	(dormitorios-dobles 2)
+	(dormitorios-simples 3)
+	(electrodomesticos FALSE)
+	(localizacion [ontologia_Class16])
+	(mascotas-permitidas FALSE)
+	(parking FALSE)
+	(piscina-comunitaria FALSE)
+	(precio 300.0)
+	(sol manana)
+	(terraza FALSE)
+	(tipo duplex))
+
+([ontologia_Class20] of  Vivienda
+
+	(adaptada-mobilidad-reducida TRUE)
+	(aire-acondicionado TRUE)
+	(amueblado TRUE)
+	(area 500.0)
+	(ascensor FALSE)
+	(balcon TRUE)
+	(buenas-vistas TRUE)
+	(calefaccion TRUE)
+	(dormitorios-dobles 3)
+	(dormitorios-simples 6)
+	(electrodomesticos TRUE)
+	(localizacion [ontologia_Class17])
+	(mascotas-permitidas TRUE)
+	(parking TRUE)
+	(piscina-comunitaria TRUE)
+	(precio 2000.0)
+	(sol todo-el-dia)
+	(terraza TRUE)
+	(tipo unifamiliar))
+
+([ontologia_Class21] of  Vivienda
+
+	(adaptada-mobilidad-reducida FALSE)
+	(aire-acondicionado FALSE)
+	(amueblado TRUE)
+	(area 75.0)
+	(balcon TRUE)
+	(buenas-vistas FALSE)
+	(calefaccion TRUE)
+	(dormitorios-dobles 1)
+	(dormitorios-simples 1)
+	(electrodomesticos FALSE)
+	(localizacion [ontologia_Class18])
+	(mascotas-permitidas TRUE)
+	(parking FALSE)
+	(piscina-comunitaria FALSE)
+	(precio 100.0)
+	(sol todo-el-dia)
+	(terraza TRUE)
+	(tipo duplex))
+
+([ontologia_Class5] of  Vivienda
+
+	(adaptada-mobilidad-reducida TRUE)
+	(aire-acondicionado TRUE)
+	(altura 5)
+	(amueblado TRUE)
+	(area 300.0)
+	(ascensor TRUE)
+	(balcon TRUE)
+	(buenas-vistas TRUE)
+	(calefaccion TRUE)
+	(dormitorios-dobles 1)
+	(dormitorios-simples 3)
+	(electrodomesticos TRUE)
+	(localizacion [ontologia_Class6])
+	(mascotas-permitidas TRUE)
+	(parking FALSE)
+	(piscina-comunitaria FALSE)
+	(precio 1000.0)
+	(sol tarde)
+	(terraza TRUE)
+	(tipo duplex))
+
+([ontologia_Class6] of  Coordinates
+
+	(X 10)
+	(Y 12))
+
+([ontologia_Class7] of  Vivienda
+
+	(adaptada-mobilidad-reducida FALSE)
+	(aire-acondicionado FALSE)
+	(altura 9)
+	(altura-maxima 10)
+	(amueblado FALSE)
+	(area 25.0)
+	(ascensor TRUE)
+	(balcon FALSE)
+	(buenas-vistas FALSE)
+	(calefaccion TRUE)
+	(dormitorios-dobles 0)
+	(dormitorios-simples 1)
+	(electrodomesticos FALSE)
+	(localizacion [ontologia_Class8])
+	(mascotas-permitidas TRUE)
+	(parking FALSE)
+	(piscina-comunitaria FALSE)
+	(precio 50.0)
+	(terraza FALSE)
+	(tipo piso))
+
+([ontologia_Class8] of  Coordinates
+
+	(X 86)
+	(Y 33))
