@@ -529,6 +529,8 @@
         (adaptada-mobilidad-reducida TRUE)
         (aire-acondicionado TRUE)
         (amueblado TRUE)
+        (altura 8)
+        (altura-maxima 10)
         (area 500.0)
         (ascensor FALSE)
         (balcon TRUE)
@@ -544,7 +546,7 @@
         (precio 2000.0)
         (sol todo-el-dia)
         (terraza TRUE)
-        (tipo unifamiliar))
+        (tipo piso))
 
     ([ontologia_Class21] of  Vivienda
 
@@ -1031,7 +1033,7 @@
 
 ;; Devuelve TRUE si y sólo si tiene sentido que tuviera ascensor, aunque no lo tenga (piso o duplex)
 (defmessage-handler MAIN::Vivienda puede-tener-ascensor ()
-    (or (eq ?self:tipo piso) (eq self:tipo duplex))
+    (or (eq ?self:tipo piso) (eq ?self:tipo duplex))
 )
 
 ;; Imprime los datos de una Vivienda
@@ -1040,6 +1042,7 @@
     (send ?self:localizacion imprimir)
     (format t "%nPrecio: %f" ?self:precio)
     (format t "%nSuperficie: %f" ?self:area)
+    (format t "%nTipo de vivienda: %s" ?self:tipo)
     (format t "%nDormitorios dobles: %d" ?self:dormitorios-dobles)
     (format t "%nDormitorios simples: %d" ?self:dormitorios-simples)
     (format t "%nTerraza: %s" ?self:terraza)
@@ -1049,10 +1052,11 @@
     (format t "%nAire acondicionado: %s" ?self:aire-acondicionado)
     (format t "%nCalefacción: %s" ?self:calefaccion)
     (format t "%nPiscina: %s" ?self:piscina-comunitaria)
-    (if ((send ?self puede-tener-ascensor))
+    (if (eq TRUE (send ?self puede-tener-ascensor)) then
         (format t "%nAscensor: %s" ?self:ascensor)
     )
-    (format t "%nAdaptada para mobilidad reducida: " ?self:adaptada-mobilidad-reducida)
+    (format t "%nAdaptada para mobilidad reducida: %s" ?self:adaptada-mobilidad-reducida)
+    (format t "%nAcepta mascotas: %s" ?self:mascotas-permitidas)
     (printout t crlf)
 )
 
@@ -1099,11 +1103,6 @@
 ;; Obtiene el número de personas que pueden dormir en la vivienda recomendada
 (defmessage-handler MAIN::Recomendacion get-personas ()
     (+ (send ?self:vivienda get-dormitorios-simples) (* 2 (send ?self:vivienda get-dormitorios-dobles)))
-)
-
-;; Devuelve TRUE si y sólo si la vivienda recomendada tiene sentido que tuviera ascensor, aunque no lo tenga (piso o duplex)
-(defmessage-handler MAIN::Recomendacion puede-tener-ascensor ()
-    (or (eq ?self:tipo piso) (eq self:tipo duplex))
 )
 
 ;;-------------------------------------------------------------------------------------------------------------
@@ -1340,6 +1339,16 @@
     (bind ?ascensor (pregunta-si-no "En caso de que la vivienda tenga más de 1 planta, ¿quiere que tenga ascensor?"))
     (modify ?usuario (ascensor ?ascensor))
     (assert (ascensor-preguntado))
+)
+
+(defrule recopilacion::preguntar-mascotas-permitidas "Pregunta si el usuario tiene mascotas o tiene pensado tenerlas"
+    (declare (salience -10))
+    ?usuario <- (usuario)
+    (not (mascotas-permitidas-preguntado))
+    =>
+    (bind ?mascotas-permitidas (pregunta-si-no "¿Tiene mascotas o tiene pensado tenerlas en el futuro?"))
+    (modify ?usuario (mascotas-permitidas ?mascotas-permitidas))
+    (assert (mascotas-permitidas-preguntado))
 )
 
 (defrule recopilacion::pasar-modulo-procesado "Pasa al módulo de procesado de información"
@@ -1584,14 +1593,18 @@
 ;; ASCENSOR
 
 (defrule procesado::descartar-ascensor "No se cumple las restricción de ascensor"
-    ?u <- (usuario (ascensor ?ascensor))
+    ?u <- (usuario (ascensor ?ascensor) (adaptada-mobilidad-reducida ?adaptada-mobilidad-reducida))
     ?rec <- (object (is-a Recomendacion) (vivienda ?v))
     (test (eq TRUE (send ?v puede-tener-ascensor)))
     ;; Ha pedido ascensor y no lo tiene
     (test (eq TRUE (and (eq TRUE ?ascensor) (not (send ?v get-ascensor)))))
     (not (filtrar-ascensor ?rec))
     =>
-    (send ?rec parcialmente-recomendable "No tiene ascensor")
+    (if (eq TRUE ?adaptada-mobilidad-reducida) then
+        (assert (invalida ?rec))
+    else
+        (send ?rec parcialmente-recomendable "No tiene ascensor")
+    ) 
     (assert (filtrar-ascensor ?rec))
 )
 
@@ -1619,6 +1632,31 @@
     =>
     (send ?rec parcialmente-recomendable "No está adaptada para mobilidad reducida")
     (assert (filtrar-adaptada-mobilidad-reducida ?rec))
+)
+
+;; MASCOTAS
+
+(defrule procesado::descartar-mascotas-permitidas "No se cumple las restricción de mascotas permitidas, por lo tanto se descarta la vivienda automáticamente"
+    ?u <- (usuario (mascotas-permitidas ?mascotas-permitidas))
+    ?rec <- (object (is-a Recomendacion) (vivienda ?v))
+    ;; Ha indicado que tiene o tendrá mascotas y la vivienda no las permite
+    (test (eq TRUE (and (eq TRUE ?mascotas-permitidas) (not (send ?v get-mascotas-permitidas)))))
+    (not (filtrar-mascotas-permitidas ?rec))
+    =>
+    (assert (invalida ?rec))
+    (assert (filtrar-mascotas-permitidas ?rec))
+)
+
+(defrule procesado::mascotas-permitidas-muy-recomendable "La vivienda permite el acceso a las mascotas aunque no lo haya solicitado"
+    (declare (salience -1))
+    ?u <- (usuario (mascotas-permitidas ?mascotas-permitidas))
+    ?rec <- (object (is-a Recomendacion) (vivienda ?v))
+    ;; No tiene mascotas ni tiene pensado tenerlas pero la vivienda las permite
+    (test (eq TRUE (and (eq FALSE ?mascotas-permitidas) (eq TRUE (send ?v get-mascotas-permitidas)))))
+    (not (filtrar-mascotas-permitidasa ?rec))
+    =>
+    (send ?rec muy-recomendable "Permite el acceso a las mascotas aunque no lo haya solicitado")
+    (assert (filtrar-mascotas-permitidas ?rec))
 )
 
 (defrule procesado::pasar-modulo-generacion "Pasa al módulo de generación de resultados"
