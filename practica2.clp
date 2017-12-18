@@ -73,11 +73,17 @@
         (allowed-values FALSE TRUE)
 ;+      (cardinality 1 1)
         (create-accessor read-write))
-    (multislot habitaciones
-;+      (comment "Dormitorios de la vivienda")
-        (type SYMBOL)
-        (allowed-values simple doble)
-        (cardinality 1 ?VARIABLE)
+    (single-slot dormitorios-dobles
+;+      (comment "Dormitorios dobles de la vivienda")
+        (type INTEGER)
+        (default 0)
+;+      (cardinality 1 1)
+        (create-accessor read-write))
+    (single-slot dormitorios-simples
+;+      (comment "Dormitorios simples de la vivienda")
+        (type INTEGER)
+        (default 0)
+;+      (cardinality 1 1)
         (create-accessor read-write))
     (single-slot aire-acondicionado
 ;+      (comment "Booleano que indica si la vivienda tiene aire acondicionado")
@@ -215,11 +221,17 @@
         (allowed-values FALSE TRUE)
 ;+      (cardinality 1 1)
         (create-accessor read-write))
-    (multislot habitaciones
-;+      (comment "Dormitorios de la vivienda")
-        (type SYMBOL)
-        (allowed-values simple doble)
-        (cardinality 1 ?VARIABLE)
+    (single-slot dormitorios-dobles
+;+      (comment "Dormitorios dobles de la vivienda")
+        (type INTEGER)
+        (default 0)
+;+      (cardinality 1 1)
+        (create-accessor read-write))
+    (single-slot dormitorios-simples
+;+      (comment "Dormitorios simples de la vivienda")
+        (type INTEGER)
+        (default 0)
+;+      (cardinality 1 1)
         (create-accessor read-write))
     (single-slot precio
 ;+      (comment "Precio mensual")
@@ -284,7 +296,7 @@
         (aire-acondicionado TRUE)
         (area 200.0)
         (balcon FALSE)
-        (habitaciones doble)
+        (dormitorios-dobles 1)
         (piscina-comunitaria FALSE)
         (amueblado TRUE)
         (electrodomesticos FALSE)
@@ -302,7 +314,8 @@
         (aire-acondicionado TRUE)
         (area 500.0)
         (balcon TRUE)
-        (habitaciones doble doble simple simple simple)
+        (dormitorios-dobles 2)
+        (dormitorios-simples 3)
         (piscina-comunitaria FALSE)
         (amueblado TRUE)
         (electrodomesticos TRUE)
@@ -321,7 +334,8 @@
         (aire-acondicionado FALSE)
         (area 75.0)
         (balcon TRUE)
-        (habitaciones simple doble simple)
+        (dormitorios-dobles 1)
+        (dormitorios-simples 2)
         (piscina-comunitaria FALSE)
         (amueblado FALSE)
         (electrodomesticos FALSE)
@@ -377,6 +391,37 @@
 	(slot precio-maximo (type INTEGER))
     (slot precio-estricto (type SYMBOL)
         (allowed-values FALSE TRUE))
+    (slot requiere-superficie (type SYMBOL)
+        (allowed-values FALSE TRUE))
+    (slot superficie-minima (type FLOAT))
+    (slot personas (type INTEGER))
+    (slot dormitorios-dobles (type INTEGER))
+    (slot dormitorios-simples (type INTEGER))
+    (slot aire-acondicionado (type SYMBOL)
+        (allowed-values FALSE TRUE))
+    (slot tipo (type SYMBOL)
+        (allowed-values piso duplex unifamiliar))
+    (slot electrodomesticos (type SYMBOL)
+        (allowed-values FALSE TRUE))
+    (slot terraza (type SYMBOL)
+        (allowed-values FALSE TRUE))
+    (slot piscina-comunitaria (type SYMBOL)
+        (allowed-values FALSE TRUE))
+    (slot calefaccion (type SYMBOL)
+        (allowed-values FALSE TRUE))
+    (slot balcon (type SYMBOL)
+        (allowed-values FALSE TRUE))
+    (slot buenas-vistas (type SYMBOL)
+        (allowed-values FALSE TRUE))
+    (slot altura (type INTEGER))
+    (slot parking (type SYMBOL)
+        (allowed-values FALSE TRUE))
+    (slot sol (type SYMBOL)
+        (allowed-values manana tarde todo-el-dia))
+    (slot mascotas-permitidas (type SYMBOL)
+        (allowed-values FALSE TRUE))
+    (slot amueblado (type SYMBOL)
+        (allowed-values FALSE TRUE))
 )
 
 ;; Lista de recomendaciones sin orden que se procesan y todavía no han sido descartadas
@@ -410,6 +455,28 @@
 )
 
 ;;-------------------------------------------------------------------------------------------------------------
+;;                      DEBUG
+;;-------------------------------------------------------------------------------------------------------------
+
+;;; Función para no volvernos locos
+(deffunction MAIN::debug (?msg)
+    (printout t "[DEBUG] " ?msg crlf)
+)
+
+;;; Función para no volvernos muy locos
+(deffunction MAIN::debug-instance (?msg ?obj)
+    (printout t "[DEBUG] " ?msg ":" crlf)
+    (send ?obj imprimir)
+)
+
+;;; Función para no volvernos muy locos 3
+(deffunction MAIN::debug-rec (?msg ?rec ?justificacion ?msg-obj ?obj)
+    (printout t "[DEBUG] " ?msg crlf ?justificacion crlf)
+    (printout t ?msg-obj ": " ?obj crlf)
+    (send ?rec imprimir)
+)
+
+;;-------------------------------------------------------------------------------------------------------------
 ;;                      MENSAJES
 ;;-------------------------------------------------------------------------------------------------------------
 
@@ -422,7 +489,11 @@
 (defmessage-handler MAIN::Vivienda imprimir ()
 	(printout t "Localización: ")
     (send ?self:localizacion imprimir)
-    (format t "%nPrecio: %f%n" ?self:precio)
+    (format t "%nPrecio: %f" ?self:precio)
+    (format t "%nSuperficie: %f" ?self:area)
+    (format t "%nDormitorios dobles: %d" ?self:dormitorios-dobles)
+    (format t "%nDormitorios simples: %d" ?self:dormitorios-simples)
+    (printout t crlf)
 )
 
 ;; Imprime los datos de una Recomendacion
@@ -560,17 +631,6 @@
     ?lista
 )
 
-;;; Función para no volvernos locos
-(deffunction MAIN::debug (?msg)
-    (printout t "[DEBUG] " ?msg crlf)
-)
-
-;;; Función para no volvernos muy locos
-(deffunction MAIN::debug-instance (?msg ?obj)
-    (printout t "[DEBUG] " ?msg ":" crlf)
-    (send ?obj imprimir)
-)
-
 
 ;;-------------------------------------------------------------------------------------------------------------
 ;;                      REGLAS
@@ -591,17 +651,56 @@
 
 ;; RECOPILACION DE INFORMACIÓN
 
-(defrule recopilacion::preguntar-precio "Pregunta el rango de precios que le interesa al usuario"
+(defrule recopilacion::crear-usuario "Inicializa el usuario"
     (not (usuario))
+    =>
+    (assert (usuario))
+)
+
+(defrule recopilacion::preguntar-precio "Pregunta el rango de precios que le interesa al usuario"
+    (declare (salience -1))
+    ?usuario <- (usuario)
+    (not (precio-preguntado))
     =>
     (bind ?minimo (pregunta-numerica "Escoge el precio mínimo:" 1))
     (bind ?maximo (pregunta-numerica "Escoge el precio máximo:" ?minimo))
     (bind ?precio-estricto (not (pregunta-si-no "¿Estarías dispuesto a pagar más si la oferta lo merece?")))
-    (assert (usuario (precio-minimo ?minimo) (precio-maximo ?maximo) (precio-estricto ?precio-estricto)))
+    (modify ?usuario (precio-minimo ?minimo) (precio-maximo ?maximo) (precio-estricto ?precio-estricto))
+    (assert (precio-preguntado))
 )
 
-(defrule recopilacion::pasar_modulo_procesado "Pasa al módulo de procesado de información"
-    (declare (salience -1))
+(defrule recopilacion::preguntar-superficie "Pregunta el mínimo de metros cuadradados de la vivienda"
+    (declare (salience -2))
+    ?usuario <- (usuario)
+    (not (superficie-preguntada))
+    =>
+    (bind ?requiere-superficie (pregunta-si-no "¿Te gustaría indicar un mínimo de metros cuadrados?"))
+    (bind ?superficie
+        (if (eq TRUE ?requiere-superficie) then
+            (pregunta-numerica "¿Cuántos metros cuadrados quieres como mínimo?" 1)
+        else
+            1
+        )
+    )
+    (modify ?usuario (superficie-minima ?superficie) (requiere-superficie ?requiere-superficie))
+    (assert (superficie-preguntada))
+)
+
+(defrule recopilacion::preguntar-habitaciones "Pregunta la cantidad de personas en casa y sus dormitorios"
+    (declare (salience -3))
+    ?usuario <- (usuario)
+    (not (habitaciones-preguntadas))
+    =>
+    Cuántas personas habrá en casa? Mínimo número de dormitorios dobles?
+    (bind ?personas (pregunta-numerica "¿Cuántas personas habrá en casa?" 1))
+    (bind ?dormitorios-dobles (pregunta-numerica "¿Cuántos dormitorios dobles necesitas?" 0))
+    (bind ?dormitorios-simples (- ?personas (* 2 ?dormitorios-dobles)))
+    (modify ?usuario (personas ?personas) (dormitorios-dobles ?dormitorios-dobles) (dormitorios-simples ?dormitorios-simples))
+    (assert (habitaciones-preguntadas))
+)
+
+(defrule recopilacion::pasar-modulo-procesado "Pasa al módulo de procesado de información"
+    (declare (salience -100))
     =>
     (focus procesado)
 )
@@ -657,6 +756,8 @@
     (modify ?hecho-validas (recomendaciones $?validas))
 )
 
+;; PRECIO
+
 (defrule procesado::precio-no-recomendable "El precio es demasiado caro"
     ?u <- (usuario (precio-minimo ?minimo) (precio-maximo ?maximo) (precio-estricto ?estricto))
     ?rec <- (object (is-a Recomendacion) (vivienda ?v))
@@ -664,6 +765,7 @@
     (test (eq TRUE (or (and ?estricto (> (send ?v get-precio) ?maximo)) (and (not ?estricto) (> (send ?v get-precio) (* 1.3 ?maximo))))))
     (not (filtrar-precio ?rec))
     =>
+    (debug-instance "Precio no recomendable" ?rec)
     (assert (invalida ?rec))
     (assert (filtrar-precio ?rec))
 )
@@ -688,6 +790,53 @@
     =>
     (send ?rec parcialmente-recomendable "Precio un poco por encima del máximo")
     (assert (filtrar-precio ?rec))
+)
+
+;; SUPERFICIE
+
+(defrule procesado::descartar-superficie "Los metros cuadrados no llegan al mínimo requerido"
+    ?u <- (usuario (superficie-minima ?minimo))
+    ?rec <- (object (is-a Recomendacion) (vivienda ?v))
+    (test (eq TRUE (< (send ?v get-area) ?minimo)))
+    (not (filtrar-superficie ?rec))
+    =>
+    (send ?rec parcialmente-recomendable "Los metros cuadrados no llegan al mínimo requerido")
+    (assert (filtrar-superficie ?rec))
+)
+
+(defrule procesado::superficie-muy-recomendable "Los metros cuadrados superan el doble del mínimo requerido"
+    ?u <- (usuario (superficie-minima ?minimo) (requiere-superficie ?requiere-superficie))
+    ?rec <- (object (is-a Recomendacion) (vivienda ?v))
+    (test (eq TRUE (>= (send ?v get-area) (* 2 ?minimo))))
+    (test (eq TRUE ?requiere-superficie))
+    (not (filtrar-superficie ?rec))
+    =>
+    (send ?rec muy-recomendable "Los metros cuadrados superan el doble del mínimo requerido")
+    (assert (filtrar-superficie ?rec))
+)
+
+;; DORMITORIOS
+
+(defrule procesado::descartar-dormitorios "Los dormitorios no llegan al mínimo requerido"
+    ?u <- (usuario (personas ?personas) (dormitorios-dobles ?dormitorios-dobles) (dormitorios-simples ?dormitorios-simples))
+    ?rec <- (object (is-a Recomendacion) (vivienda ?v))
+    (test (eq TRUE (or (< (send ?v get-dormitorios-dobles) ?dormitorios-dobles) (< (send ?v get-dormitorios-simples) ?dormitorios-simples))))
+    (not (filtrar-dormitorios ?rec))
+    =>
+    (assert (invalida ?rec))
+    (assert (filtrar-dormitorios ?rec))
+)
+
+(defrule procesado::muchos-dormitorios "Hay 2 o más dormitorios adicionales a los requeridos"
+    (declare (salience -1))
+    ?u <- (usuario (personas ?personas) (dormitorios-dobles ?dormitorios-dobles) (dormitorios-simples ?dormitorios-simples))
+    ?rec <- (object (is-a Recomendacion) (vivienda ?v))
+    (test (eq TRUE (>= (+ (send ?v get-dormitorios-dobles) (send ?v get-dormitorios-simples)) (+ 2 (+ ?dormitorios-dobles ?dormitorios-simples)))))
+    (not (invalida ?rec))
+    (not (filtrar-dormitorios ?rec))
+    =>
+    (send ?rec muy-recomendable "Hay 2 o más dormitorios adicionales a los requeridos")
+    (assert (filtrar-dormitorios ?rec))
 )
 
 (defrule procesado::pasar-modulo-generacion "Pasa al módulo de generación de resultados"
@@ -795,8 +944,8 @@
 	=>
     (if (eq (length$ $?validas) 0) then
         (printout t crlf "No tenemos ninguna recomendación que cumpla con los requisitos indicados pero quizás te puedan interesar algunas de estas viviendas:" crlf)
-        (progn$ (?rec $?descartadas)
-            (send ?rec imprimir)
+        (loop-for-count (?i 1 (min 5 (length$ $?descartadas))) do ;; Muestra como máximo 5
+            (send (nth$ ?i $?descartadas) imprimir)
         )
     else
         (printout t crlf "Estas son nuestras recomendaciones: " crlf)
