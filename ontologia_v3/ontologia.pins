@@ -1,4 +1,4 @@
-; Mon Dec 18 18:53:44 CET 2017
+; Mon Dec 18 19:04:41 CET 2017
 ; 
 ;+ (version "3.4.8")
 ;+ (build "Build 629")
@@ -51,7 +51,7 @@
 	(terraza FALSE)
 	(tipo duplex))
 
-([ontologia_Class10018] of  Coordinates
+([ontologia_Class10018] of  Coordenadas
 
 	(X 0)
 	(Y 12))
@@ -80,12 +80,12 @@
 	(terraza TRUE)
 	(tipo piso))
 
-([ontologia_Class10020] of  Coordinates
+([ontologia_Class10020] of  Coordenadas
 
 	(X 2)
 	(Y 32))
 
-([ontologia_Class11] of  Coordinates
+([ontologia_Class11] of  Coordenadas
 
 	(X 12)
 	(Y 84))
@@ -113,7 +113,7 @@
 	(terraza TRUE)
 	(tipo piso))
 
-([ontologia_Class13] of  Coordinates
+([ontologia_Class13] of  Coordenadas
 
 	(X 22)
 	(Y 92))
@@ -140,22 +140,22 @@
 	(terraza FALSE)
 	(tipo unifamiliar))
 
-([ontologia_Class15] of  Coordinates
+([ontologia_Class15] of  Coordenadas
 
 	(X 15)
 	(Y 24))
 
-([ontologia_Class16] of  Coordinates
+([ontologia_Class16] of  Coordenadas
 
 	(X 20)
 	(Y 30))
 
-([ontologia_Class17] of  Coordinates
+([ontologia_Class17] of  Coordenadas
 
 	(X 50)
 	(Y 50))
 
-([ontologia_Class18] of  Coordinates
+([ontologia_Class18] of  Coordenadas
 
 	(X 99)
 	(Y 88))
@@ -250,7 +250,7 @@
 	(terraza TRUE)
 	(tipo duplex))
 
-([ontologia_Class6] of  Coordinates
+([ontologia_Class6] of  Coordenadas
 
 	(X 10)
 	(Y 12))
@@ -278,7 +278,7 @@
 	(terraza FALSE)
 	(tipo piso))
 
-([ontologia_Class8] of  Coordinates
+([ontologia_Class8] of  Coordenadas
 
 	(X 86)
 	(Y 33))
@@ -288,7 +288,7 @@
 	(localizacion-servicio [ontologia_v2_Class10022])
 	(tipo-servicio centro-medico))
 
-([ontologia_v2_Class10022] of  Coordinates
+([ontologia_v2_Class10022] of  Coordenadas
 
 	(X 37)
 	(Y 22))
@@ -298,7 +298,7 @@
 	(localizacion-servicio [ontologia_v2_Class10024])
 	(tipo-servicio discoteca))
 
-([ontologia_v2_Class10024] of  Coordinates
+([ontologia_v2_Class10024] of  Coordenadas
 
 	(X 85)
 	(Y 30))
@@ -313,12 +313,12 @@
 	(localizacion-servicio [ontologia_v2_Class10027])
 	(tipo-servicio colegio))
 
-([ontologia_v2_Class10027] of  Coordinates
+([ontologia_v2_Class10027] of  Coordenadas
 
 	(X 0)
 	(Y 8))
 
-([ontologia_v2_Class10028] of  Coordinates
+([ontologia_v2_Class10028] of  Coordenadas
 
 	(X 15)
 	(Y 16))
@@ -328,7 +328,7 @@
 	(localizacion-servicio [ontologia_v2_Class10030])
 	(tipo-servicio hipermercado))
 
-([ontologia_v2_Class10030] of  Coordinates
+([ontologia_v2_Class10030] of  Coordenadas
 
 	(X 31)
 	(Y 76))
@@ -338,7 +338,7 @@
 	(localizacion-servicio [ontologia_v2_Class10032])
 	(tipo-servicio zona-verde))
 
-([ontologia_v2_Class10032] of  Coordinates
+([ontologia_v2_Class10032] of  Coordenadas
 
 	(X 21)
 	(Y 56))
@@ -348,7 +348,7 @@
 	(localizacion-servicio [ontologia_v2_Class10034])
 	(tipo-servicio transporte-publico))
 
-([ontologia_v2_Class10034] of  Coordinates
+([ontologia_v2_Class10034] of  Coordenadas
 
 	(X 74)
 	(Y 25))
@@ -358,7 +358,7 @@
 	(localizacion-servicio [ontologia_v2_Class10036])
 	(tipo-servicio gimnasio))
 
-([ontologia_v2_Class10036] of  Coordinates
+([ontologia_v2_Class10036] of  Coordenadas
 
 	(X 65)
 	(Y 13))
@@ -368,7 +368,7 @@
 	(localizacion-servicio [ontologia_v2_Class10038])
 	(tipo-servicio biblioteca))
 
-([ontologia_v2_Class10038] of  Coordinates
+([ontologia_v2_Class10038] of  Coordenadas
 
 	(X 75)
 	(Y 32))
@@ -378,7 +378,7 @@
 	(localizacion-servicio [ontologia_v2_Class10040])
 	(tipo-servicio restaurante))
 
-([ontologia_v2_Class10040] of  Coordinates
+([ontologia_v2_Class10040] of  Coordenadas
 
 	(X 43)
 	(Y 75))
@@ -388,7 +388,7 @@
 	(localizacion-servicio [ontologia_v2_Class10042])
 	(tipo-servicio centro-medico))
 
-([ontologia_v2_Class10042] of  Coordinates
+([ontologia_v2_Class10042] of  Coordenadas
 
 	(X 67)
 	(Y 32))
@@ -398,7 +398,7 @@
 	(localizacion-servicio [ontologia_v2_Class10044])
 	(tipo-servicio colegio))
 
-([ontologia_v2_Class10044] of  Coordinates
+([ontologia_v2_Class10044] of  Coordenadas
 
 	(X 73)
 	(Y 22))
@@ -408,7 +408,7 @@
 	(localizacion-servicio [ontologia_v2_Class10046])
 	(tipo-servicio supermercado))
 
-([ontologia_v2_Class10046] of  Coordinates
+([ontologia_v2_Class10046] of  Coordenadas
 
 	(X 70)
 	(Y 24))
@@ -418,7 +418,7 @@
 	(localizacion-servicio [ontologia_v2_Class10048])
 	(tipo-servicio hipermercado))
 
-([ontologia_v2_Class10048] of  Coordinates
+([ontologia_v2_Class10048] of  Coordenadas
 
 	(X 76)
 	(Y 31))
@@ -428,7 +428,7 @@
 	(localizacion-servicio [ontologia_v2_Class10050])
 	(tipo-servicio zona-verde))
 
-([ontologia_v2_Class10050] of  Coordinates
+([ontologia_v2_Class10050] of  Coordenadas
 
 	(X 52)
 	(Y 31))
@@ -438,7 +438,7 @@
 	(localizacion-servicio [ontologia_v2_Class10052])
 	(tipo-servicio discoteca))
 
-([ontologia_v2_Class10052] of  Coordinates
+([ontologia_v2_Class10052] of  Coordenadas
 
 	(X 46)
 	(Y 21))
@@ -448,7 +448,7 @@
 	(localizacion-servicio [ontologia_v2_Class10054])
 	(tipo-servicio transporte-publico))
 
-([ontologia_v2_Class10054] of  Coordinates
+([ontologia_v2_Class10054] of  Coordenadas
 
 	(X 25)
 	(Y 74))
@@ -458,7 +458,7 @@
 	(localizacion-servicio [ontologia_v2_Class10056])
 	(tipo-servicio gimnasio))
 
-([ontologia_v2_Class10056] of  Coordinates
+([ontologia_v2_Class10056] of  Coordenadas
 
 	(X 33)
 	(Y 94))
@@ -468,7 +468,7 @@
 	(localizacion-servicio [ontologia_v2_Class10058])
 	(tipo-servicio biblioteca))
 
-([ontologia_v2_Class10058] of  Coordinates
+([ontologia_v2_Class10058] of  Coordenadas
 
 	(X 12)
 	(Y 54))
@@ -478,7 +478,7 @@
 	(localizacion-servicio [ontologia_v2_Class10060])
 	(tipo-servicio restaurante))
 
-([ontologia_v2_Class10060] of  Coordinates
+([ontologia_v2_Class10060] of  Coordenadas
 
 	(X 67)
 	(Y 13))
@@ -488,7 +488,7 @@
 	(localizacion-servicio [ontologia_v2_Class10062])
 	(tipo-servicio supermercado))
 
-([ontologia_v2_Class10062] of  Coordinates
+([ontologia_v2_Class10062] of  Coordenadas
 
 	(X 41)
 	(Y 18))
@@ -498,7 +498,7 @@
 	(localizacion-servicio [ontologia_v2_Class10064])
 	(tipo-servicio hipermercado))
 
-([ontologia_v2_Class10064] of  Coordinates
+([ontologia_v2_Class10064] of  Coordenadas
 
 	(X 10)
 	(Y 13))
@@ -508,7 +508,7 @@
 	(localizacion-servicio [ontologia_v2_Class10066])
 	(tipo-servicio zona-verde))
 
-([ontologia_v2_Class10066] of  Coordinates
+([ontologia_v2_Class10066] of  Coordenadas
 
 	(X 15)
 	(Y 10))
@@ -518,7 +518,7 @@
 	(localizacion-servicio [ontologia_v2_Class10068])
 	(tipo-servicio transporte-publico))
 
-([ontologia_v2_Class10068] of  Coordinates
+([ontologia_v2_Class10068] of  Coordenadas
 
 	(X 50)
 	(Y 2))
@@ -528,7 +528,7 @@
 	(localizacion-servicio [ontologia_v2_Class10070])
 	(tipo-servicio transporte-publico))
 
-([ontologia_v2_Class10070] of  Coordinates
+([ontologia_v2_Class10070] of  Coordenadas
 
 	(X 90)
 	(Y 12))
@@ -538,7 +538,7 @@
 	(localizacion-servicio [ontologia_v2_Class10072])
 	(tipo-servicio transporte-publico))
 
-([ontologia_v2_Class10072] of  Coordinates
+([ontologia_v2_Class10072] of  Coordenadas
 
 	(X 1)
 	(Y 10))

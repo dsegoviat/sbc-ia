@@ -1,4 +1,4 @@
-; Mon Dec 18 18:53:44 CET 2017
+; Mon Dec 18 19:04:41 CET 2017
 ; 
 ;+ (version "3.4.8")
 ;+ (build "Build 629")
@@ -20,12 +20,12 @@
 ([BROWSER_SLOT_NAMES] of  Property_List
 
 	(properties
-		[ontologia_ProjectKB_Class132]
-		[ontologia_ProjectKB_Class133]
-		[ontologia_ProjectKB_Class134]
-		[ontologia_ProjectKB_Class135]
-		[ontologia_ProjectKB_Class136]
-		[ontologia_ProjectKB_Class137]))
+		[ontologia_ProjectKB_Class159]
+		[ontologia_ProjectKB_Class160]
+		[ontologia_ProjectKB_Class161]
+		[ontologia_ProjectKB_Class162]
+		[ontologia_ProjectKB_Class163]
+		[ontologia_ProjectKB_Class164]))
 
 ([CLSES_TAB] of  Widget
 
@@ -80,9 +80,9 @@
 ([KB_199435_Class1] of  Map
 
 	(entries
-		[ontologia_ProjectKB_Class138]
-		[ontologia_ProjectKB_Class139]
-		[ontologia_ProjectKB_Class140]))
+		[ontologia_ProjectKB_Class165]
+		[ontologia_ProjectKB_Class166]
+		[ontologia_ProjectKB_Class167]))
 
 ([KB_199435_Class10] of  Property_List
 )
@@ -545,51 +545,51 @@
 
 	(name "SearchTab_Query"))
 
-([ontologia_ProjectKB_Class132] of  String
+([ontologia_ProjectKB_Class159] of  String
 
 	(name ":INSTANCE-ANNOTATION")
 	(string_value "%3AANNOTATION-TEXT"))
 
-([ontologia_ProjectKB_Class133] of  String
+([ontologia_ProjectKB_Class160] of  String
 
 	(name ":META-CLASS")
 	(string_value "%3ANAME"))
 
-([ontologia_ProjectKB_Class134] of  String
+([ontologia_ProjectKB_Class161] of  String
 
 	(name "Servicio")
 	(string_value "localizacion-servicio{+-+%28}tipo-servicio{%29}"))
 
-([ontologia_ProjectKB_Class135] of  String
+([ontologia_ProjectKB_Class162] of  String
 
-	(name "Coordinates")
+	(name "Coordenadas")
 	(string_value "{%28}X{%2C}Y{%29}"))
 
-([ontologia_ProjectKB_Class136] of  String
+([ontologia_ProjectKB_Class163] of  String
 
 	(name "Vivienda")
 	(string_value "precio{+-+}localizacion"))
 
-([ontologia_ProjectKB_Class137] of  String
+([ontologia_ProjectKB_Class164] of  String
 
 	(name ":PAL-CONSTRAINT")
 	(string_value "%3APAL-NAME"))
 
-([ontologia_ProjectKB_Class138] of  Map_Entry
+([ontologia_ProjectKB_Class165] of  Map_Entry
 
 	(key "suppress_instance_counting")
 	(key_class "java.lang.String")
 	(value "false")
 	(value_class "java.lang.String"))
 
-([ontologia_ProjectKB_Class139] of  Map_Entry
+([ontologia_ProjectKB_Class166] of  Map_Entry
 
 	(key "change_tracking_active")
 	(key_class "java.lang.String")
 	(value "false")
 	(value_class "java.lang.String"))
 
-([ontologia_ProjectKB_Class140] of  Map_Entry
+([ontologia_ProjectKB_Class167] of  Map_Entry
 
 	(key "add_name_on_instance_form")
 	(key_class "java.lang.String")

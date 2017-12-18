@@ -1,4 +1,4 @@
-; Mon Dec 18 18:53:44 CET 2017
+; Mon Dec 18 19:04:41 CET 2017
 ; 
 ;+ (version "3.4.8")
 ;+ (build "Build 629")
@@ -69,7 +69,7 @@
 	(single-slot dormitorios-simples
 ;+		(comment "Número de dormitorios simples de la vivienda")
 		(type INTEGER)
-		(range 0 %3FVARIABLE)
+		(default 0)
 ;+		(cardinality 1 1)
 		(create-accessor read-write))
 	(single-slot aire-acondicionado
@@ -93,13 +93,13 @@
 	(single-slot localizacion-servicio
 ;+		(comment "Localización del servicio")
 		(type INSTANCE)
-;+		(allowed-classes Coordinates)
+;+		(allowed-classes Coordenadas)
 ;+		(cardinality 1 1)
 		(create-accessor read-write))
 	(single-slot dormitorios-dobles
 ;+		(comment "Número de dormitorios dobles de la vivienda")
 		(type INTEGER)
-		(range 0 %3FVARIABLE)
+		(default 0)
 ;+		(cardinality 1 1)
 		(create-accessor read-write))
 	(single-slot adaptada-mobilidad-reducida
@@ -136,7 +136,7 @@
 	(single-slot localizacion
 ;+		(comment "Localización de la vivienda (coordenadas X e Y)")
 		(type INSTANCE)
-;+		(allowed-classes Coordinates)
+;+		(allowed-classes Coordenadas)
 ;+		(cardinality 1 1)
 		(create-accessor read-write))
 	(single-slot area
@@ -216,7 +216,7 @@
 	(single-slot localizacion
 ;+		(comment "Localización de la vivienda (coordenadas X e Y)")
 		(type INSTANCE)
-;+		(allowed-classes Coordinates)
+;+		(allowed-classes Coordenadas)
 ;+		(cardinality 1 1)
 		(create-accessor read-write))
 	(single-slot parking
@@ -234,7 +234,7 @@
 	(single-slot dormitorios-dobles
 ;+		(comment "Número de dormitorios dobles de la vivienda")
 		(type INTEGER)
-		(range 0 %3FVARIABLE)
+		(default 0)
 ;+		(cardinality 1 1)
 		(create-accessor read-write))
 	(single-slot area
@@ -250,7 +250,7 @@
 	(single-slot dormitorios-simples
 ;+		(comment "Número de dormitorios simples de la vivienda")
 		(type INTEGER)
-		(range 0 %3FVARIABLE)
+		(default 0)
 ;+		(cardinality 1 1)
 		(create-accessor read-write))
 	(single-slot altura-maxima
@@ -278,7 +278,7 @@
 ;+		(cardinality 0 1)
 		(create-accessor read-write)))
 
-(defclass Coordinates "Clase coordenadas que contiene información sobre los ejes X e Y de otra clase."
+(defclass Coordenadas "Clase coordenadas que contiene información sobre los ejes X e Y de otra clase."
 	(is-a USER)
 	(role concrete)
 	(single-slot Y
@@ -296,7 +296,7 @@
 	(single-slot localizacion-servicio
 ;+		(comment "Localización del servicio")
 		(type INSTANCE)
-;+		(allowed-classes Coordinates)
+;+		(allowed-classes Coordenadas)
 ;+		(cardinality 1 1)
 		(create-accessor read-write))
 	(single-slot tipo-servicio
