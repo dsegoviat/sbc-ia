@@ -1,0 +1,72 @@
+; Mon Dec 18 13:17:48 CET 2017
+; 
+;+ (version "3.4.8")
+;+ (build "Build 629")
+
+([ontologia_Class16] of  Coordinates
+
+	(X 20)
+	(Y 30))
+
+([ontologia_Class17] of  Coordinates
+
+	(X 50)
+	(Y 50))
+
+([ontologia_Class18] of  Coordinates
+
+	(X 99)
+	(Y 88))
+
+([ontologia_Class19] of  Vivienda
+
+	(aire-acondicionado TRUE)
+	(amueblado TRUE)
+	(area 200.0)
+	(balcon FALSE)
+	(buenas-vistas FALSE)
+	(calefaccion TRUE)
+	(electrodomesticos FALSE)
+	(localizacion [ontologia_Class16])
+	(mascotas-permitidas FALSE)
+	(parking FALSE)
+	(piscina-comunitaria FALSE)
+	(precio 200.0)
+	(terraza FALSE)
+	(tipo duplex))
+
+([ontologia_Class20] of  Vivienda
+
+	(aire-acondicionado TRUE)
+	(amueblado TRUE)
+	(area 500.0)
+	(balcon TRUE)
+	(buenas-vistas TRUE)
+	(calefaccion TRUE)
+	(electrodomesticos TRUE)
+	(localizacion [ontologia_Class17])
+	(mascotas-permitidas TRUE)
+	(parking TRUE)
+	(piscina-comunitaria FALSE)
+	(precio 2000.0)
+	(sol allday)
+	(terraza TRUE)
+	(tipo singlefamily))
+
+([ontologia_Class21] of  Vivienda
+
+	(aire-acondicionado FALSE)
+	(amueblado FALSE)
+	(area 75.0)
+	(balcon TRUE)
+	(buenas-vistas FALSE)
+	(calefaccion FALSE)
+	(electrodomesticos FALSE)
+	(localizacion [ontologia_Class18])
+	(mascotas-permitidas TRUE)
+	(parking FALSE)
+	(piscina-comunitaria FALSE)
+	(precio 100.0)
+	(sol allday)
+	(terraza TRUE)
+	(tipo flat))
