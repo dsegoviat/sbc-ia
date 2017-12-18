@@ -1241,7 +1241,9 @@
     (bind ?ya (send ?coordenadas-vivienda get-Y))
     (bind ?xb (send ?coordenadas-servicio get-X))
     (bind ?yb (send ?coordenadas-servicio get-Y))
-    (sqrt (+ (** (- xb xa) 2) (** (- yb ya) 2)))
+    (bind ?xsub (- ?xb ?xa))
+    (bind ?ysub (- ?yb ?ya))
+    (sqrt (+ (* ?xsub ?xsub) (* ?ysub ?ysub)))
 )
 
 ;;-------------------------------------------------------------------------------------------------------------
@@ -1399,17 +1401,27 @@
 
 ;; SERVICIOS CERCANOS
 
+(defrule recopilacion::crea-lista-servicios-cerca "Se crea una lista de servicios cercanos requeridos por el usuario"
+    (not (lista-servicios-cerca))
+    =>
+    (assert (lista-servicios-cerca))
+)
+
 (defrule recopilacion::preguntar-servicios-cerca "Pregunta qué servicios necesita el usuario que estén cerca"
     (declare (salience -12))
     (not (servicios-preguntado))
     ?hecho-servicios <- (lista-servicios-cerca (servicios $?lista-servicios-cercanos))
     =>
     (bind ?necesita-servicios (pregunta-si-no "¿Necesita algún servicio cercano a la vivienda?"))
-    if (eq TRUE (?necesita-servicios) then
+    (if (eq TRUE ?necesita-servicios) then
         (bind ?formatos (create$ centro-medico colegio supermercado hipermercado zona-verde discoteca 
             transporte-publico gimnasio biblioteca restaurante))
         (bind $?lista-servicios-cercanos (pregunta-multi "¿Requiere que alguno de los siguientes servicios esté cerca de la vivienda?" ?formatos))
-        (modify ?hecho-servicios (servicios $?lista-servicios-cercanos))
+        (bind ?servicios-requeridos (create$ ))
+        (progn$ (?i $?lista-servicios-cercanos)
+            (bind ?servicios-requeridos (insert$ ?servicios-requeridos (+ 1 (length$ ?servicios-requeridos)) (nth$ ?i ?formatos)))
+        )
+        (modify ?hecho-servicios (servicios ?servicios-requeridos))
     )
     (assert (servicios-preguntado))
 )
@@ -1432,14 +1444,6 @@
     (not (lista-descartadas))
     =>
     (assert (lista-descartadas))
-)
-
-;; SERVICIOS CERCANOS REQUERIDOS POR EL USUARIO
-
-(defrule generacion::crea-lista-servicios-cerca "Se crea una lista de servicios cercanos requeridos por el usuario"
-    (not (lista-servicios-cerca))
-    =>
-    (assert (lista-servicios-cerca))
 )
 
 (defrule procesado::crear-recomendaciones "Se crean todas las recomendaciones a partir de las viviendas en la lista de recomendaciones válidas"
@@ -1779,16 +1783,76 @@
 
 ;; SERVICIOS CERCANOS
 
-(defrule procesado::descartar-servicios-cercanos "Se filtran los servicios cercanos a la vivienda"
-    (declare (salience -1))
-    ?u <- (usuario (mascotas-permitidas ?mascotas-permitidas))
+(deffunction procesado::hay-servicio-cercano (?vivienda ?tipo-servicio)
+    (bind $?servicios (find-all-instances ((?inst Servicio)) (eq ?inst:tipo-servicio ?tipo-servicio)))
+    (progn$ (?servicio $?servicios)
+        (bind ?dist (funcall euclidian-distance ?vivienda ?servicio))
+        (if (< ?dist 40) then
+            (return TRUE)
+        )
+    )
+    (return FALSE)
+)
+
+(defrule procesado::filtrar-servicios-cercanos "Se filtran las recomendaciones con servicios requeridos cerca de la vivienda"
+    ?hecho-servicios <- (lista-servicios-cerca (servicios $?lista-servicios-cercanos))
     ?rec <- (object (is-a Recomendacion) (vivienda ?v))
-    ;; No tiene mascotas ni tiene pensado tenerlas pero la vivienda las permite
-    (test (eq TRUE (and (eq FALSE ?mascotas-permitidas) (eq TRUE (send ?v get-mascotas-permitidas)))))
-    (not (filtrar-mascotas-permitidasa ?rec))
+    (not (filtrar-distancia-servicios ?rec))
     =>
-    (send ?rec muy-recomendable "Permite el acceso a las mascotas aunque no lo haya solicitado")
-    (assert (filtrar-mascotas-permitidas ?rec))
+    ;; Para cada servicio requerido buscamos si hay algun servicio de ese mismo tipo que esté a distancia cercana (40)
+    ;; Si no hay ninguno de ese tipo a distancia cercana pero sí a distancia media (100) entonces lo añadimos como parcialmente recomendable
+    ;; En otro caso invalidamos la recomendación ya que todas las instancias de servicio de ese tipo están lejos (> 100)
+    (progn$ (?servicio-req $?lista-servicios-cercanos)
+        (bind $?servicios (find-all-instances ((?inst Servicio)) (eq ?inst:tipo-servicio ?servicio-req)))
+        (bind ?cercano-encontrado FALSE)
+        (bind ?mediano-encontrado FALSE)
+        (progn$ (?servicio $?servicios)
+            (bind ?dist (funcall euclidian-distance ?v ?servicio))
+            (if (< ?dist 40) then
+                (bind ?cercano-encontrado TRUE)
+                (break)
+            else
+                (if (< ?dist 100) then
+                    (bind ?mediano-encontrado TRUE)
+                )
+            )
+        )
+        (if (eq FALSE ?cercano-encontrado) then
+            (if (eq FALSE ?mediano-encontrado) then
+                (assert (invalida ?rec)) ;; Todos los servicios de este tipo son lejanos
+            else
+                (send ?rec parcialmente-recomendable (str-cat "El servicio " ?servicio-req " está a distancia media"))
+            )
+        )
+    )
+    (assert (filtrar-distancia-servicios ?rec))
+)
+
+(defrule procesado::supermercado-cercano "Es recomendable que haya supermercado cercanos"
+    ?rec <- (object (is-a Recomendacion) (vivienda ?v))
+    (not (filtrar-super ?rec))
+    (test (eq TRUE (funcall hay-servicio-cercano ?v supermercado)))
+    =>
+    (send ?rec muy-recomendable "Hay cerca uno o más supermercados")
+    (assert (filtrar-super ?rec))
+)
+
+(defrule procesado::gimnasio-cercano "Es recomendable que haya gimnasios cercanos"
+    ?rec <- (object (is-a Recomendacion) (vivienda ?v))
+    (not (filtrar-gimnasio ?rec))
+    (test (eq TRUE (funcall hay-servicio-cercano ?v gimnasio)))
+    =>
+    (send ?rec muy-recomendable "Hay cerca uno o más gimnasios")
+    (assert (filtrar-gimnasio ?rec))
+)
+
+(defrule procesado::restaurante-cercano "Es recomendable que haya restaurante cercanos"
+    ?rec <- (object (is-a Recomendacion) (vivienda ?v))
+    (not (filtrar-restaurante ?rec))
+    (test (eq TRUE (funcall hay-servicio-cercano ?v restaurante)))
+    =>
+    (send ?rec muy-recomendable "Hay cerca uno o más restaurantes")
+    (assert (filtrar-restaurante ?rec))
 )
 
 (defrule procesado::pasar-modulo-generacion "Pasa al módulo de generación de resultados"
