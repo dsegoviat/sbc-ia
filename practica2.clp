@@ -937,6 +937,8 @@
         (allowed-values FALSE TRUE))
     (slot tipo (type SYMBOL)
         (allowed-values piso duplex unifamiliar))
+    (slot amueblado (type SYMBOL)
+        (allowed-values FALSE TRUE))
     (slot electrodomesticos (type SYMBOL)
         (allowed-values FALSE TRUE))
     (slot terraza (type SYMBOL)
@@ -949,14 +951,16 @@
         (allowed-values FALSE TRUE))
     (slot buenas-vistas (type SYMBOL)
         (allowed-values FALSE TRUE))
+    (slot ascensor (type SYMBOL)
+        (allowed-values FALSE TRUE))
+    (slot mobilidad-reducida (type SYMBOL)
+        (allowed-values FALSE TRUE))
     (slot altura (type INTEGER))
     (slot parking (type SYMBOL)
         (allowed-values FALSE TRUE))
     (slot sol (type SYMBOL)
         (allowed-values manana tarde todo-el-dia))
     (slot mascotas-permitidas (type SYMBOL)
-        (allowed-values FALSE TRUE))
-    (slot amueblado (type SYMBOL)
         (allowed-values FALSE TRUE))
 )
 
@@ -1033,6 +1037,10 @@
     (format t "%nSuperficie: %f" ?self:area)
     (format t "%nDormitorios dobles: %d" ?self:dormitorios-dobles)
     (format t "%nDormitorios simples: %d" ?self:dormitorios-simples)
+    (format t "%nTerraza: %s" ?self:terraza)
+    (format t "%nBalcón: %s" ?self:balcon)
+    (format t "%nAmueblado: %s" ?self:amueblado)
+    (format t "%nElectrodomesticos: %s" ?self:electrodomesticos)
     (printout t crlf)
 )
 
@@ -1251,6 +1259,28 @@
     (assert (habitaciones-preguntadas))
 )
 
+(defrule recopilacion::preguntar-terraza-balcon "Pregunta si el usuario quiere terraza o balcón"
+    (declare (salience -4))
+    ?usuario <- (usuario)
+    (not (terraza-balcon-preguntado))
+    =>
+    (bind ?terraza (pregunta-si-no "¿Quiere terraza obligatoriamente?"))
+    (bind ?balcon (pregunta-si-no "¿Quiere balcón obligatoriamente?"))
+    (modify ?usuario (terraza ?terraza) (balcon ?balcon))
+    (assert (terraza-balcon-preguntado))
+)
+
+(defrule recopilacion::preguntar-amueblado-electrodomesticos "Pregunta si el usuario quiere la vivienda amueblada o con electrodomesticos"
+    (declare (salience -5))
+    ?usuario <- (usuario)
+    (not (amueblado-electrodomesticos-preguntado))
+    =>
+    (bind ?amueblado (pregunta-si-no "¿Necesita que la vivienda esté amueblada?"))
+    (bind ?electrodomesticos (pregunta-si-no "¿Necesita la vivienda con electrodomesticos?"))
+    (modify ?usuario (amueblado ?amueblado) (electrodomesticos ?electrodomesticos))
+    (assert (amueblado-electrodomesticos-preguntado))
+)
+
 (defrule recopilacion::pasar-modulo-procesado "Pasa al módulo de procesado de información"
     (declare (salience -100))
     =>
@@ -1390,6 +1420,56 @@
     (assert (filtrar-dormitorios ?rec))
 )
 
+;; TERRAZA O BALCÓN
+
+(defrule procesado::descartar-terraza-balcon "No se cumplen las restricciones de terraza o balcón"
+    ?u <- (usuario (terraza ?terraza) (balcon ?balcon))
+    ?rec <- (object (is-a Recomendacion) (vivienda ?v))
+    ;; Ha pedido terraza y no la tiene o ha pedido balcón y no lo tiene
+    (test (eq TRUE (or (and (eq TRUE ?terraza) (not (send ?v get-terraza))) (and (eq TRUE ?balcon) (not (send ?v get-balcon))))))
+    (not (filtrar-terraza-balcon ?rec))
+    =>
+    (send ?rec parcialmente-recomendable "No se cumplen las restricciones de terraza o balcón")
+    (assert (filtrar-terraza-balcon ?rec))
+)
+
+(defrule procesado::terraza-balcon-muy-recomendable "Tiene balcón o terraza aunque no lo haya pedido"
+    (declare (salience -1))
+    ?u <- (usuario (terraza ?terraza) (balcon ?balcon))
+    ?rec <- (object (is-a Recomendacion) (vivienda ?v))
+    ;; No ha pedido terraza o balcón pero tiene balcón o terraza igualmente
+    (test (eq TRUE (or (and (eq FALSE ?terraza) (eq TRUE (send ?v get-terraza))) (and (eq FALSE ?balcon) (eq TRUE (send ?v get-balcon))))))
+    (not (filtrar-terraza-balcon ?rec))
+    =>
+    (send ?rec muy-recomendable "Tiene balcón o terraza aunque no lo haya pedido")
+    (assert (filtrar-terraza-balcon ?rec))
+)
+
+;; AMUEBLADO O ELECTRODOMÉSTICOS
+
+(defrule procesado::descartar-amueblado-electrodomesticos "No se cumplen las restricciones de amueblado o electrodomesticos"
+    ?u <- (usuario (amueblado ?amueblado) (electrodomesticos ?electrodomesticos))
+    ?rec <- (object (is-a Recomendacion) (vivienda ?v))
+    ;; Ha pedido amueblado y no lo está o ha pedido electrodomesticos y no los tiene
+    (test (eq TRUE (or (and (eq TRUE ?amueblado) (not (send ?v get-amueblado))) (and (eq TRUE ?electrodomesticos) (not (send ?v get-electrodomesticos))))))
+    (not (filtrar-amueblado-electrodomesticos ?rec))
+    =>
+    (send ?rec parcialmente-recomendable "No se cumplen las restricciones de amueblado o electrodomesticos")
+    (assert (filtrar-amueblado-electrodomesticos ?rec))
+)
+
+(defrule procesado::amueblado-electrodomesticos-muy-recomendable "Tiene electrodomesticos o está amueblada aunque no lo haya pedido"
+    (declare (salience -1))
+    ?u <- (usuario (amueblado ?amueblado) (electrodomesticos ?electrodomesticos))
+    ?rec <- (object (is-a Recomendacion) (vivienda ?v))
+    ;; No ha pedido que esté amueblado o tenga electrodomesticos pero los tiene
+    (test (eq TRUE (or (and (eq FALSE ?amueblado) (eq TRUE (send ?v get-amueblado))) (and (eq FALSE ?electrodomesticos) (eq TRUE (send ?v get-electrodomesticos))))))
+    (not (filtrar-amueblado-electrodomesticos ?rec))
+    =>
+    (send ?rec muy-recomendable "Tiene electrodomesticos o está amueblada aunque no lo haya pedido")
+    (assert (filtrar-amueblado-electrodomesticos ?rec))
+)
+
 (defrule procesado::pasar-modulo-generacion "Pasa al módulo de generación de resultados"
     (declare (salience -2))
     =>
@@ -1397,54 +1477,6 @@
 )
 
 ;; GENERACIÓN DE RESULTADOS
-
-;; ORDENACIÓN
-;; El criterio de ordenación es el siguiente (si hay empate se pasa al siguiente criterio):
-;; 1- Por cantidad de personas que caben (dormitorios-simples + 2*dormitorios-dobles) descendentemente
-;; 2- Por precio ascendentemente
-;; 3- Por cantidad de características muy recomendables descendentemente
-;; 4- Por cantidad de características no recomendables ascendentemente
-
-(deffunction generacion::rec-compare (?a ?b)
-    (bind ?criterio-personas (< (send ?a get-personas) (send ?b get-personas)))
-    (if (eq ?criterio-personas 0) then
-        (bind ?criterio-precio (> (send ?a get-precio) (send ?b get-precio)))
-        (if (eq ?criterio-precio 0) then
-            (bind ?criterio-muy-recomendable (< (send ?a get-caracteristicas-muy-recomendables) (send ?b get-caracteristicas-muy-recomendables)))
-            (if (eq ?criterio-muy-recomendable 0) then
-                (bind ?criterio-no-recomendable (> (send ?a get-caracteristicas-no-recomendables) (send ?b get-caracteristicas-no-recomendables)))
-                ?criterio-no-recomendable
-            else
-                ?criterio-muy-recomendable
-            )
-        else
-            ?criterio-precio
-        )
-    else
-        ?criterio-personas
-    )
-)
-
-(defrule generacion::ordenar-validas "Ordena las recomendaciones válidas"
-    ?hecho-validas <- (lista-validas (recomendaciones $?validas))
-    (test (eq TRUE (> (length$ $?validas) 0)))
-    (not (lista-validas-ordenada))
-    =>
-    (bind ?validas-ordenadas (sort rec-compare $?validas))
-    (modify ?hecho-validas (recomendaciones ?validas-ordenadas))
-    (assert (lista-validas-ordenada))
-)
-
-(defrule generacion::ordenar-descartadas "Ordena las recomendaciones descartadas si no hay ninguna válida"
-    ?hecho-validas <- (lista-validas (recomendaciones $?validas))
-    ?hecho-descartadas <- (lista-descartadas (recomendaciones $?descartadas))
-    (test (eq (length$ $?validas) 0))
-    (not (lista-descartadas-ordenada))
-    =>
-    (bind ?descartadas-ordenadas (sort rec-compare $?descartadas))
-    (modify ?hecho-descartadas (recomendaciones ?descartadas-ordenadas))
-    (assert (lista-descartadas-ordenada))
-)
 
 ;; ADECUADAS
 
@@ -1505,9 +1537,8 @@
 
 ;; CLASIFICACIÓN
 
-(defrule generacion::clasificar-validas "Clasifica ordenadamente las recomendaciones válidas en 'Muy recomendable', 'Adecuada' o 'Parcialmente adecuada'"
+(defrule generacion::clasificar-validas "Clasifica las recomendaciones válidas en 'Muy recomendable', 'Adecuada' o 'Parcialmente adecuada'"
     ?hecho-validas <- (lista-validas (recomendaciones $?validas))
-    (lista-validas-ordenada)
     (not (clasificadas))
     =>
     (progn$ (?rec $?validas)
@@ -1524,6 +1555,77 @@
         )
     )
     (assert (clasificadas))
+)
+
+;; ORDENACIÓN
+;; El criterio de ordenación es el siguiente (si hay empate se pasa al siguiente criterio):
+;; 1- Por cantidad de personas que caben (dormitorios-simples + 2*dormitorios-dobles) descendentemente
+;; 2- Por precio ascendentemente
+;; 3- Por cantidad de características muy recomendables descendentemente
+;; 4- Por cantidad de características no recomendables ascendentemente
+
+(deffunction generacion::rec-compare (?a ?b)
+    (bind ?criterio-personas (< (send ?a get-personas) (send ?b get-personas)))
+    (if (eq ?criterio-personas 0) then
+        (bind ?criterio-precio (> (send ?a get-precio) (send ?b get-precio)))
+        (if (eq ?criterio-precio 0) then
+            (bind ?criterio-muy-recomendable (< (send ?a get-caracteristicas-muy-recomendables) (send ?b get-caracteristicas-muy-recomendables)))
+            (if (eq ?criterio-muy-recomendable 0) then
+                (bind ?criterio-no-recomendable (> (send ?a get-caracteristicas-no-recomendables) (send ?b get-caracteristicas-no-recomendables)))
+                ?criterio-no-recomendable
+            else
+                ?criterio-muy-recomendable
+            )
+        else
+            ?criterio-precio
+        )
+    else
+        ?criterio-personas
+    )
+)
+
+(defrule generacion::ordenar-adecuadas "Ordena las recomendaciones adecuadas"
+    (clasificadas)
+    ?hecho-adecuadas <- (lista-adecuadas (recomendaciones $?adecuadas))
+    (test (eq TRUE (> (length$ $?adecuadas) 0)))
+    (not (lista-adecuadas-ordenada))
+    =>
+    (bind ?adecuadas-ordenadas (sort rec-compare $?adecuadas))
+    (modify ?hecho-adecuadas (recomendaciones ?adecuadas-ordenadas))
+    (assert (lista-adecuadas-ordenada))
+)
+
+(defrule generacion::ordenar-parcialmente-adecuadas "Ordena las recomendaciones parcialmente adecuadas"
+    (clasificadas)
+    ?hecho-parcialmente-adecuadas <- (lista-parcialmente-adecuadas (recomendaciones $?parcialmente-adecuadas))
+    (test (eq TRUE (> (length$ $?parcialmente-adecuadas) 0)))
+    (not (lista-parcialmente-adecuadas-ordenada))
+    =>
+    (bind ?parcialmente-adecuadas-ordenadas (sort rec-compare $?parcialmente-adecuadas))
+    (modify ?hecho-parcialmente-adecuadas (recomendaciones ?parcialmente-adecuadas-ordenadas))
+    (assert (lista-parcialmente-adecuadas-ordenada))
+)
+
+(defrule generacion::ordenar-muy-recomendables "Ordena las recomendaciones muy recomendables"
+    (clasificadas)
+    ?hecho-muy-recomendables <- (lista-muy-recomendables (recomendaciones $?muy-recomendables))
+    (test (eq TRUE (> (length$ $?muy-recomendables) 0)))
+    (not (lista-muy-recomendables-ordenada))
+    =>
+    (bind ?muy-recomendables-ordenadas (sort rec-compare $?muy-recomendables))
+    (modify ?hecho-muy-recomendables (recomendaciones ?muy-recomendables-ordenadas))
+    (assert (lista-muy-recomendables-ordenada))
+)
+
+(defrule generacion::ordenar-descartadas "Ordena las recomendaciones descartadas si no hay ninguna válida"
+    ?hecho-validas <- (lista-validas (recomendaciones $?validas))
+    ?hecho-descartadas <- (lista-descartadas (recomendaciones $?descartadas))
+    (test (eq (length$ $?validas) 0))
+    (not (lista-descartadas-ordenada))
+    =>
+    (bind ?descartadas-ordenadas (sort rec-compare $?descartadas))
+    (modify ?hecho-descartadas (recomendaciones ?descartadas-ordenadas))
+    (assert (lista-descartadas-ordenada))
 )
 
 (defrule generacion::pasar-modulo-presentacion "Pasa al módulo de presentación de resultados"
