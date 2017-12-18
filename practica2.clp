@@ -434,13 +434,13 @@
 
         (adaptada-mobilidad-reducida FALSE)
         (aire-acondicionado FALSE)
-        (altura 10)
+        (altura -1)
         (altura-maxima 10)
         (amueblado FALSE)
         (area 200.0)
         (ascensor FALSE)
         (balcon FALSE)
-        (buenas-vistas TRUE)
+        (buenas-vistas FALSE)
         (calefaccion TRUE)
         (dormitorios-dobles 1)
         (dormitorios-simples 2)
@@ -553,6 +553,8 @@
         (adaptada-mobilidad-reducida FALSE)
         (aire-acondicionado FALSE)
         (amueblado TRUE)
+        (altura 0)
+        (altura-maxima 2)
         (area 75.0)
         (balcon TRUE)
         (buenas-vistas FALSE)
@@ -574,6 +576,7 @@
         (adaptada-mobilidad-reducida TRUE)
         (aire-acondicionado TRUE)
         (altura 5)
+        (altura-maxima 5)
         (amueblado TRUE)
         (area 300.0)
         (ascensor TRUE)
@@ -1036,6 +1039,18 @@
     (or (eq ?self:tipo piso) (eq ?self:tipo duplex))
 )
 
+;; Obtiene la altura en string
+(defmessage-handler MAIN::Vivienda get-indicador-altura ()
+    (if (eq ?self:altura 0) then
+        "Entresuelo"
+    else (if (< ?self:altura 0) then
+        "Bajos"
+        else
+            (str-cat ?self:altura " / " ?self:altura-maxima)
+        )
+    )
+)
+
 ;; Imprime los datos de una Vivienda
 (defmessage-handler MAIN::Vivienda imprimir ()
 	(printout t "Localización: ")
@@ -1043,10 +1058,14 @@
     (format t "%nPrecio: %f" ?self:precio)
     (format t "%nSuperficie: %f" ?self:area)
     (format t "%nTipo de vivienda: %s" ?self:tipo)
+    (if (neq ?self:tipo unifamiliar) then
+        (format t "%nAltura: %s" (send ?self get-indicador-altura))
+    )
     (format t "%nDormitorios dobles: %d" ?self:dormitorios-dobles)
     (format t "%nDormitorios simples: %d" ?self:dormitorios-simples)
     (format t "%nTerraza: %s" ?self:terraza)
     (format t "%nBalcón: %s" ?self:balcon)
+    (format t "%nSoleado: %s" (upcase ?self:sol))
     (format t "%nAmueblado: %s" ?self:amueblado)
     (format t "%nElectrodomesticos: %s" ?self:electrodomesticos)
     (format t "%nAire acondicionado: %s" ?self:aire-acondicionado)
@@ -1057,6 +1076,7 @@
     )
     (format t "%nAdaptada para mobilidad reducida: %s" ?self:adaptada-mobilidad-reducida)
     (format t "%nAcepta mascotas: %s" ?self:mascotas-permitidas)
+    (format t "%nParking incluído: %s" ?self:parking)
     (printout t crlf)
 )
 
@@ -1351,6 +1371,16 @@
     (assert (mascotas-permitidas-preguntado))
 )
 
+(defrule recopilacion::preguntar-parking "Pregunta si el usuario tiene coche y quiere parking"
+    (declare (salience -11))
+    ?usuario <- (usuario)
+    (not (parking-preguntado))
+    =>
+    (bind ?parking (pregunta-si-no "¿Le gustaría disponer de parking en el mismo edificio de su vivienda?"))
+    (modify ?usuario (parking ?parking))
+    (assert (parking-preguntado))
+)
+
 (defrule recopilacion::pasar-modulo-procesado "Pasa al módulo de procesado de información"
     (declare (salience -100))
     =>
@@ -1567,7 +1597,7 @@
 
 ;; PISCINA COMUNITARIA
 
-(defrule procesado::descartar-piscina-comunitaria "No se cumple las restricción de acceso a la piscina comunitaria o piscina propia"
+(defrule procesado::descartar-piscina-comunitaria "No se cumple la restricción de acceso a la piscina comunitaria o piscina propia"
     ?u <- (usuario (piscina-comunitaria ?piscina-comunitaria))
     ?rec <- (object (is-a Recomendacion) (vivienda ?v))
     ;; Ha pedido acceso a la piscina comunitaria y no lo tiene
@@ -1592,7 +1622,7 @@
 
 ;; ASCENSOR
 
-(defrule procesado::descartar-ascensor "No se cumple las restricción de ascensor"
+(defrule procesado::descartar-ascensor "No se cumple la restricción de ascensor"
     ?u <- (usuario (ascensor ?ascensor) (adaptada-mobilidad-reducida ?adaptada-mobilidad-reducida))
     ?rec <- (object (is-a Recomendacion) (vivienda ?v))
     (test (eq TRUE (send ?v puede-tener-ascensor)))
@@ -1623,7 +1653,7 @@
 
 ;; MOBILIDAD REDUCIDA
 
-(defrule procesado::descartar-mobilidad-reducida "No se cumple las restricción de mobilidad reducida"
+(defrule procesado::descartar-mobilidad-reducida "No cumple la restricción de mobilidad reducida"
     ?u <- (usuario (adaptada-mobilidad-reducida ?adaptada-mobilidad-reducida))
     ?rec <- (object (is-a Recomendacion) (vivienda ?v))
     ;; Ha pedido que la vivienda esté adaptada a mobilidad reducida y no lo está
@@ -1636,7 +1666,7 @@
 
 ;; MASCOTAS
 
-(defrule procesado::descartar-mascotas-permitidas "No se cumple las restricción de mascotas permitidas, por lo tanto se descarta la vivienda automáticamente"
+(defrule procesado::descartar-mascotas-permitidas "No se cumple la restricción de mascotas permitidas, por lo tanto se descarta la vivienda automáticamente"
     ?u <- (usuario (mascotas-permitidas ?mascotas-permitidas))
     ?rec <- (object (is-a Recomendacion) (vivienda ?v))
     ;; Ha indicado que tiene o tendrá mascotas y la vivienda no las permite
@@ -1657,6 +1687,53 @@
     =>
     (send ?rec muy-recomendable "Permite el acceso a las mascotas aunque no lo haya solicitado")
     (assert (filtrar-mascotas-permitidas ?rec))
+)
+
+;; PARKING
+
+(defrule procesado::descartar-parking "No cumple las restricción de parking"
+    ?u <- (usuario (parking ?parking))
+    ?rec <- (object (is-a Recomendacion) (vivienda ?v))
+    ;; Ha pedido que la vivienda incluya parking pero no lo incluye
+    (test (eq TRUE (and (eq TRUE ?parking) (not (send ?v get-parking)))))
+    (not (filtrar-parking ?rec))
+    =>
+    (send ?rec parcialmente-recomendable "No tiene parking")
+    (assert (filtrar-parking ?rec))
+)
+
+;; VIVIENDA SOLEADA
+
+(defrule procesado::soleado-muy-recomendable "La vivienda es soleada todo el día"
+    ?rec <- (object (is-a Recomendacion) (vivienda ?v))
+    (test (eq (send ?v get-sol) todo-el-dia))
+    (not (filtrar-soleado ?rec))
+    =>
+    (send ?rec muy-recomendable "La vivienda es soleada todo el día")
+    (assert (filtrar-soleado ?rec))
+)
+
+;; ÁTICO
+
+(defrule procesado::atico-muy-recomendable "La vivienda es un ático"
+    ?rec <- (object (is-a Recomendacion) (vivienda ?v))
+    (test (eq (send ?v get-altura-maxima) (send ?v get-altura)))
+    (test (neq (send ?v get-tipo) unifamiliar))
+    (not (filtrar-atico ?rec))
+    =>
+    (send ?rec muy-recomendable "La vivienda es un ático")
+    (assert (filtrar-atico ?rec))
+)
+
+;; BUENAS VISTAS
+
+(defrule procesado::buenas-vistas-muy-recomendable "La vivienda tiene buenas vistas"
+    ?rec <- (object (is-a Recomendacion) (vivienda ?v))
+    (test (eq TRUE (send ?v get-buenas-vistas)))
+    (not (filtrar-vistas ?rec))
+    =>
+    (send ?rec muy-recomendable "La vivienda tiene buenas vistas")
+    (assert (filtrar-vistas ?rec))
 )
 
 (defrule procesado::pasar-modulo-generacion "Pasa al módulo de generación de resultados"
