@@ -1,0 +1,544 @@
+; Mon Dec 18 18:53:44 CET 2017
+; 
+;+ (version "3.4.8")
+;+ (build "Build 629")
+
+([ontologia_Class10] of  Vivienda
+
+	(adaptada-mobilidad-reducida FALSE)
+	(aire-acondicionado TRUE)
+	(altura 3)
+	(altura-maxima 8)
+	(amueblado TRUE)
+	(area 3.0)
+	(ascensor TRUE)
+	(balcon TRUE)
+	(buenas-vistas TRUE)
+	(calefaccion TRUE)
+	(dormitorios-dobles 1)
+	(dormitorios-simples 3)
+	(electrodomesticos TRUE)
+	(localizacion [ontologia_Class11])
+	(mascotas-permitidas TRUE)
+	(parking FALSE)
+	(piscina-comunitaria FALSE)
+	(precio 500.0)
+	(sol manana)
+	(terraza TRUE)
+	(tipo piso))
+
+([ontologia_Class10016] of  Vivienda
+
+	(adaptada-mobilidad-reducida FALSE)
+	(aire-acondicionado FALSE)
+	(altura 12)
+	(altura-maxima 12)
+	(amueblado TRUE)
+	(area 300.0)
+	(ascensor TRUE)
+	(balcon TRUE)
+	(buenas-vistas TRUE)
+	(calefaccion TRUE)
+	(dormitorios-dobles 2)
+	(dormitorios-simples 2)
+	(electrodomesticos TRUE)
+	(localizacion [ontologia_Class10018])
+	(mascotas-permitidas TRUE)
+	(parking FALSE)
+	(piscina-comunitaria TRUE)
+	(precio 400.0)
+	(sol todo-el-dia)
+	(terraza FALSE)
+	(tipo duplex))
+
+([ontologia_Class10018] of  Coordinates
+
+	(X 0)
+	(Y 12))
+
+([ontologia_Class10019] of  Vivienda
+
+	(adaptada-mobilidad-reducida FALSE)
+	(aire-acondicionado FALSE)
+	(altura 10)
+	(altura-maxima 10)
+	(amueblado FALSE)
+	(area 400.0)
+	(ascensor FALSE)
+	(balcon TRUE)
+	(buenas-vistas TRUE)
+	(calefaccion FALSE)
+	(dormitorios-dobles 1)
+	(dormitorios-simples 5)
+	(electrodomesticos TRUE)
+	(localizacion [ontologia_Class10020])
+	(mascotas-permitidas FALSE)
+	(parking TRUE)
+	(piscina-comunitaria TRUE)
+	(precio 800.0)
+	(sol todo-el-dia)
+	(terraza TRUE)
+	(tipo piso))
+
+([ontologia_Class10020] of  Coordinates
+
+	(X 2)
+	(Y 32))
+
+([ontologia_Class11] of  Coordinates
+
+	(X 12)
+	(Y 84))
+
+([ontologia_Class12] of  Vivienda
+
+	(adaptada-mobilidad-reducida FALSE)
+	(aire-acondicionado FALSE)
+	(altura 10)
+	(altura-maxima 10)
+	(amueblado FALSE)
+	(area 200.0)
+	(ascensor FALSE)
+	(balcon FALSE)
+	(buenas-vistas TRUE)
+	(calefaccion TRUE)
+	(dormitorios-dobles 1)
+	(dormitorios-simples 2)
+	(electrodomesticos FALSE)
+	(localizacion [ontologia_Class13])
+	(mascotas-permitidas TRUE)
+	(parking FALSE)
+	(piscina-comunitaria TRUE)
+	(precio 150.0)
+	(terraza TRUE)
+	(tipo piso))
+
+([ontologia_Class13] of  Coordinates
+
+	(X 22)
+	(Y 92))
+
+([ontologia_Class14] of  Vivienda
+
+	(adaptada-mobilidad-reducida TRUE)
+	(aire-acondicionado TRUE)
+	(amueblado TRUE)
+	(area 600.0)
+	(ascensor FALSE)
+	(balcon FALSE)
+	(buenas-vistas TRUE)
+	(calefaccion TRUE)
+	(dormitorios-dobles 5)
+	(dormitorios-simples 4)
+	(electrodomesticos TRUE)
+	(localizacion [ontologia_Class15])
+	(mascotas-permitidas FALSE)
+	(parking TRUE)
+	(piscina-comunitaria TRUE)
+	(precio 2500.0)
+	(sol todo-el-dia)
+	(terraza FALSE)
+	(tipo unifamiliar))
+
+([ontologia_Class15] of  Coordinates
+
+	(X 15)
+	(Y 24))
+
+([ontologia_Class16] of  Coordinates
+
+	(X 20)
+	(Y 30))
+
+([ontologia_Class17] of  Coordinates
+
+	(X 50)
+	(Y 50))
+
+([ontologia_Class18] of  Coordinates
+
+	(X 99)
+	(Y 88))
+
+([ontologia_Class19] of  Vivienda
+
+	(adaptada-mobilidad-reducida TRUE)
+	(aire-acondicionado TRUE)
+	(altura 1)
+	(altura-maxima 10)
+	(amueblado TRUE)
+	(area 200.0)
+	(ascensor TRUE)
+	(balcon FALSE)
+	(buenas-vistas FALSE)
+	(calefaccion TRUE)
+	(dormitorios-dobles 2)
+	(dormitorios-simples 3)
+	(electrodomesticos FALSE)
+	(localizacion [ontologia_Class16])
+	(mascotas-permitidas FALSE)
+	(parking FALSE)
+	(piscina-comunitaria FALSE)
+	(precio 300.0)
+	(sol manana)
+	(terraza FALSE)
+	(tipo duplex))
+
+([ontologia_Class20] of  Vivienda
+
+	(adaptada-mobilidad-reducida TRUE)
+	(aire-acondicionado TRUE)
+	(amueblado TRUE)
+	(area 500.0)
+	(ascensor FALSE)
+	(balcon TRUE)
+	(buenas-vistas TRUE)
+	(calefaccion TRUE)
+	(dormitorios-dobles 3)
+	(dormitorios-simples 6)
+	(electrodomesticos TRUE)
+	(localizacion [ontologia_Class17])
+	(mascotas-permitidas TRUE)
+	(parking TRUE)
+	(piscina-comunitaria TRUE)
+	(precio 2000.0)
+	(sol todo-el-dia)
+	(terraza TRUE)
+	(tipo unifamiliar))
+
+([ontologia_Class21] of  Vivienda
+
+	(adaptada-mobilidad-reducida FALSE)
+	(aire-acondicionado FALSE)
+	(amueblado TRUE)
+	(area 75.0)
+	(balcon TRUE)
+	(buenas-vistas FALSE)
+	(calefaccion TRUE)
+	(dormitorios-dobles 1)
+	(dormitorios-simples 1)
+	(electrodomesticos FALSE)
+	(localizacion [ontologia_Class18])
+	(mascotas-permitidas TRUE)
+	(parking FALSE)
+	(piscina-comunitaria FALSE)
+	(precio 100.0)
+	(sol todo-el-dia)
+	(terraza TRUE)
+	(tipo duplex))
+
+([ontologia_Class5] of  Vivienda
+
+	(adaptada-mobilidad-reducida TRUE)
+	(aire-acondicionado TRUE)
+	(altura 5)
+	(amueblado TRUE)
+	(area 300.0)
+	(ascensor TRUE)
+	(balcon TRUE)
+	(buenas-vistas TRUE)
+	(calefaccion TRUE)
+	(dormitorios-dobles 1)
+	(dormitorios-simples 3)
+	(electrodomesticos TRUE)
+	(localizacion [ontologia_Class6])
+	(mascotas-permitidas TRUE)
+	(parking TRUE)
+	(piscina-comunitaria FALSE)
+	(precio 1000.0)
+	(sol tarde)
+	(terraza TRUE)
+	(tipo duplex))
+
+([ontologia_Class6] of  Coordinates
+
+	(X 10)
+	(Y 12))
+
+([ontologia_Class7] of  Vivienda
+
+	(adaptada-mobilidad-reducida FALSE)
+	(aire-acondicionado FALSE)
+	(altura 9)
+	(altura-maxima 10)
+	(amueblado FALSE)
+	(area 25.0)
+	(ascensor TRUE)
+	(balcon FALSE)
+	(buenas-vistas FALSE)
+	(calefaccion TRUE)
+	(dormitorios-dobles 0)
+	(dormitorios-simples 1)
+	(electrodomesticos FALSE)
+	(localizacion [ontologia_Class8])
+	(mascotas-permitidas TRUE)
+	(parking FALSE)
+	(piscina-comunitaria FALSE)
+	(precio 50.0)
+	(terraza FALSE)
+	(tipo piso))
+
+([ontologia_Class8] of  Coordinates
+
+	(X 86)
+	(Y 33))
+
+([ontologia_v2_Class10021] of  Servicio
+
+	(localizacion-servicio [ontologia_v2_Class10022])
+	(tipo-servicio centro-medico))
+
+([ontologia_v2_Class10022] of  Coordinates
+
+	(X 37)
+	(Y 22))
+
+([ontologia_v2_Class10023] of  Servicio
+
+	(localizacion-servicio [ontologia_v2_Class10024])
+	(tipo-servicio discoteca))
+
+([ontologia_v2_Class10024] of  Coordinates
+
+	(X 85)
+	(Y 30))
+
+([ontologia_v2_Class10025] of  Servicio
+
+	(localizacion-servicio [ontologia_v2_Class10028])
+	(tipo-servicio supermercado))
+
+([ontologia_v2_Class10026] of  Servicio
+
+	(localizacion-servicio [ontologia_v2_Class10027])
+	(tipo-servicio colegio))
+
+([ontologia_v2_Class10027] of  Coordinates
+
+	(X 0)
+	(Y 8))
+
+([ontologia_v2_Class10028] of  Coordinates
+
+	(X 15)
+	(Y 16))
+
+([ontologia_v2_Class10029] of  Servicio
+
+	(localizacion-servicio [ontologia_v2_Class10030])
+	(tipo-servicio hipermercado))
+
+([ontologia_v2_Class10030] of  Coordinates
+
+	(X 31)
+	(Y 76))
+
+([ontologia_v2_Class10031] of  Servicio
+
+	(localizacion-servicio [ontologia_v2_Class10032])
+	(tipo-servicio zona-verde))
+
+([ontologia_v2_Class10032] of  Coordinates
+
+	(X 21)
+	(Y 56))
+
+([ontologia_v2_Class10033] of  Servicio
+
+	(localizacion-servicio [ontologia_v2_Class10034])
+	(tipo-servicio transporte-publico))
+
+([ontologia_v2_Class10034] of  Coordinates
+
+	(X 74)
+	(Y 25))
+
+([ontologia_v2_Class10035] of  Servicio
+
+	(localizacion-servicio [ontologia_v2_Class10036])
+	(tipo-servicio gimnasio))
+
+([ontologia_v2_Class10036] of  Coordinates
+
+	(X 65)
+	(Y 13))
+
+([ontologia_v2_Class10037] of  Servicio
+
+	(localizacion-servicio [ontologia_v2_Class10038])
+	(tipo-servicio biblioteca))
+
+([ontologia_v2_Class10038] of  Coordinates
+
+	(X 75)
+	(Y 32))
+
+([ontologia_v2_Class10039] of  Servicio
+
+	(localizacion-servicio [ontologia_v2_Class10040])
+	(tipo-servicio restaurante))
+
+([ontologia_v2_Class10040] of  Coordinates
+
+	(X 43)
+	(Y 75))
+
+([ontologia_v2_Class10041] of  Servicio
+
+	(localizacion-servicio [ontologia_v2_Class10042])
+	(tipo-servicio centro-medico))
+
+([ontologia_v2_Class10042] of  Coordinates
+
+	(X 67)
+	(Y 32))
+
+([ontologia_v2_Class10043] of  Servicio
+
+	(localizacion-servicio [ontologia_v2_Class10044])
+	(tipo-servicio colegio))
+
+([ontologia_v2_Class10044] of  Coordinates
+
+	(X 73)
+	(Y 22))
+
+([ontologia_v2_Class10045] of  Servicio
+
+	(localizacion-servicio [ontologia_v2_Class10046])
+	(tipo-servicio supermercado))
+
+([ontologia_v2_Class10046] of  Coordinates
+
+	(X 70)
+	(Y 24))
+
+([ontologia_v2_Class10047] of  Servicio
+
+	(localizacion-servicio [ontologia_v2_Class10048])
+	(tipo-servicio hipermercado))
+
+([ontologia_v2_Class10048] of  Coordinates
+
+	(X 76)
+	(Y 31))
+
+([ontologia_v2_Class10049] of  Servicio
+
+	(localizacion-servicio [ontologia_v2_Class10050])
+	(tipo-servicio zona-verde))
+
+([ontologia_v2_Class10050] of  Coordinates
+
+	(X 52)
+	(Y 31))
+
+([ontologia_v2_Class10051] of  Servicio
+
+	(localizacion-servicio [ontologia_v2_Class10052])
+	(tipo-servicio discoteca))
+
+([ontologia_v2_Class10052] of  Coordinates
+
+	(X 46)
+	(Y 21))
+
+([ontologia_v2_Class10053] of  Servicio
+
+	(localizacion-servicio [ontologia_v2_Class10054])
+	(tipo-servicio transporte-publico))
+
+([ontologia_v2_Class10054] of  Coordinates
+
+	(X 25)
+	(Y 74))
+
+([ontologia_v2_Class10055] of  Servicio
+
+	(localizacion-servicio [ontologia_v2_Class10056])
+	(tipo-servicio gimnasio))
+
+([ontologia_v2_Class10056] of  Coordinates
+
+	(X 33)
+	(Y 94))
+
+([ontologia_v2_Class10057] of  Servicio
+
+	(localizacion-servicio [ontologia_v2_Class10058])
+	(tipo-servicio biblioteca))
+
+([ontologia_v2_Class10058] of  Coordinates
+
+	(X 12)
+	(Y 54))
+
+([ontologia_v2_Class10059] of  Servicio
+
+	(localizacion-servicio [ontologia_v2_Class10060])
+	(tipo-servicio restaurante))
+
+([ontologia_v2_Class10060] of  Coordinates
+
+	(X 67)
+	(Y 13))
+
+([ontologia_v2_Class10061] of  Servicio
+
+	(localizacion-servicio [ontologia_v2_Class10062])
+	(tipo-servicio supermercado))
+
+([ontologia_v2_Class10062] of  Coordinates
+
+	(X 41)
+	(Y 18))
+
+([ontologia_v2_Class10063] of  Servicio
+
+	(localizacion-servicio [ontologia_v2_Class10064])
+	(tipo-servicio hipermercado))
+
+([ontologia_v2_Class10064] of  Coordinates
+
+	(X 10)
+	(Y 13))
+
+([ontologia_v2_Class10065] of  Servicio
+
+	(localizacion-servicio [ontologia_v2_Class10066])
+	(tipo-servicio zona-verde))
+
+([ontologia_v2_Class10066] of  Coordinates
+
+	(X 15)
+	(Y 10))
+
+([ontologia_v2_Class10067] of  Servicio
+
+	(localizacion-servicio [ontologia_v2_Class10068])
+	(tipo-servicio transporte-publico))
+
+([ontologia_v2_Class10068] of  Coordinates
+
+	(X 50)
+	(Y 2))
+
+([ontologia_v2_Class10069] of  Servicio
+
+	(localizacion-servicio [ontologia_v2_Class10070])
+	(tipo-servicio transporte-publico))
+
+([ontologia_v2_Class10070] of  Coordinates
+
+	(X 90)
+	(Y 12))
+
+([ontologia_v2_Class10071] of  Servicio
+
+	(localizacion-servicio [ontologia_v2_Class10072])
+	(tipo-servicio transporte-publico))
+
+([ontologia_v2_Class10072] of  Coordinates
+
+	(X 1)
+	(Y 10))

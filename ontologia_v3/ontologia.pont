@@ -1,0 +1,307 @@
+; Mon Dec 18 18:53:44 CET 2017
+; 
+;+ (version "3.4.8")
+;+ (build "Build 629")
+
+
+(defclass %3ACLIPS_TOP_LEVEL_SLOT_CLASS "Fake class to save top-level slot information"
+	(is-a USER)
+	(role abstract)
+	(single-slot sol
+;+		(comment "Indica en qué momento del dia la vivienda recibe impacto de la luz solar")
+		(type SYMBOL)
+		(allowed-values manana tarde todo-el-dia)
+;+		(cardinality 0 1)
+		(create-accessor read-write))
+	(single-slot parking
+;+		(comment "Booleano que indica si la vivienda incluye plaza de parking")
+		(type SYMBOL)
+		(allowed-values FALSE TRUE)
+;+		(cardinality 1 1)
+		(create-accessor read-write))
+	(single-slot balcon
+;+		(comment "Booleano que indica si la vivienda tiene balcón")
+		(type SYMBOL)
+		(allowed-values FALSE TRUE)
+;+		(cardinality 1 1)
+		(create-accessor read-write))
+	(single-slot altura-maxima
+;+		(comment "Número que indica el piso más alto del edificio en caso de ser un piso.")
+		(type INTEGER)
+;+		(cardinality 0 1)
+		(create-accessor read-write))
+	(single-slot amueblado
+;+		(comment "Booleano que indica si la vivienda está amueblada")
+		(type SYMBOL)
+		(allowed-values FALSE TRUE)
+;+		(cardinality 1 1)
+		(create-accessor read-write))
+	(single-slot Y
+		(type INTEGER)
+;+		(cardinality 0 1)
+		(create-accessor read-write))
+	(single-slot altura
+;+		(comment "Altura del piso")
+		(type INTEGER)
+;+		(cardinality 0 1)
+		(create-accessor read-write))
+	(single-slot piscina-comunitaria
+;+		(comment "Booleano que indica si la vivienda tiene piscina comunitaria con acceso a ella")
+		(type SYMBOL)
+		(allowed-values FALSE TRUE)
+;+		(cardinality 1 1)
+		(create-accessor read-write))
+	(single-slot buenas-vistas
+;+		(comment "Booleano que indica si la vivienda tiene vistas")
+		(type SYMBOL)
+		(allowed-values FALSE TRUE)
+;+		(cardinality 1 1)
+		(create-accessor read-write))
+	(single-slot X
+		(type INTEGER)
+;+		(cardinality 0 1)
+		(create-accessor read-write))
+	(single-slot tipo
+		(type SYMBOL)
+		(allowed-values piso duplex unifamiliar)
+;+		(cardinality 1 1)
+		(create-accessor read-write))
+	(single-slot dormitorios-simples
+;+		(comment "Número de dormitorios simples de la vivienda")
+		(type INTEGER)
+		(range 0 %3FVARIABLE)
+;+		(cardinality 1 1)
+		(create-accessor read-write))
+	(single-slot aire-acondicionado
+;+		(comment "Booleano que indica si la vivienda tiene aire acondicionado")
+		(type SYMBOL)
+		(allowed-values FALSE TRUE)
+;+		(cardinality 1 1)
+		(create-accessor read-write))
+	(single-slot ascensor
+;+		(comment "Booleano que indica si tiene ascensor en caso de que el tipo de vivienda sea: piso. En caso contrario, este slot no contiene información útil.")
+		(type SYMBOL)
+		(allowed-values FALSE TRUE)
+		(default FALSE)
+;+		(cardinality 0 1)
+		(create-accessor read-write))
+	(single-slot precio
+;+		(comment "Precio mensual")
+		(type FLOAT)
+;+		(cardinality 1 1)
+		(create-accessor read-write))
+	(single-slot localizacion-servicio
+;+		(comment "Localización del servicio")
+		(type INSTANCE)
+;+		(allowed-classes Coordinates)
+;+		(cardinality 1 1)
+		(create-accessor read-write))
+	(single-slot dormitorios-dobles
+;+		(comment "Número de dormitorios dobles de la vivienda")
+		(type INTEGER)
+		(range 0 %3FVARIABLE)
+;+		(cardinality 1 1)
+		(create-accessor read-write))
+	(single-slot adaptada-mobilidad-reducida
+;+		(comment "Booleano que indica si la casa esta adaptada para personas con mobilidad reducida")
+		(type SYMBOL)
+		(allowed-values FALSE TRUE)
+		(default FALSE)
+;+		(cardinality 1 1)
+		(create-accessor read-write))
+	(single-slot electrodomesticos
+;+		(comment "Booleano que indica si la vivienda incluye electrodomésticos")
+		(type SYMBOL)
+		(allowed-values FALSE TRUE)
+;+		(cardinality 1 1)
+		(create-accessor read-write))
+	(single-slot calefaccion
+;+		(comment "Booleano que indica si la vivienda tiene calefacción")
+		(type SYMBOL)
+		(allowed-values FALSE TRUE)
+;+		(cardinality 1 1)
+		(create-accessor read-write))
+	(single-slot terraza
+;+		(comment "Booleano que indica si la vivienda tiene terraza")
+		(type SYMBOL)
+		(allowed-values FALSE TRUE)
+;+		(cardinality 1 1)
+		(create-accessor read-write))
+	(single-slot mascotas-permitidas
+;+		(comment "Booleano que indica si las mascotas están prohibidas en esta vivienda")
+		(type SYMBOL)
+		(allowed-values FALSE TRUE)
+;+		(cardinality 1 1)
+		(create-accessor read-write))
+	(single-slot localizacion
+;+		(comment "Localización de la vivienda (coordenadas X e Y)")
+		(type INSTANCE)
+;+		(allowed-classes Coordinates)
+;+		(cardinality 1 1)
+		(create-accessor read-write))
+	(single-slot area
+;+		(comment "Superfície en metros cuadrados de la vivienda")
+		(type FLOAT)
+;+		(cardinality 1 1)
+		(create-accessor read-write))
+	(single-slot tipo-servicio
+;+		(comment "Tipo de servicio que se ofrece en una ciudad. Puede ser de tipo:\n- Centro médico\n- Colegio\n- Supermercado\n- Hipermercado\n- Zona verde\n- Discoteca\n- Transporte público\n- Gimnasio\n- Biblioteca\n- Restaurante")
+		(type SYMBOL)
+		(allowed-values centro-medico colegio supermercado hipermercado zona-verde discoteca transporte-publico gimnasio biblioteca restaurante)
+;+		(cardinality 1 1)
+		(create-accessor read-write)))
+
+(defclass Vivienda "Clase encargada de almacenar toda la información útil de una vivienda que se utilizará para contrastar con las preferencias del usuario"
+	(is-a USER)
+	(role concrete)
+	(single-slot adaptada-mobilidad-reducida
+;+		(comment "Booleano que indica si la casa esta adaptada para personas con mobilidad reducida")
+		(type SYMBOL)
+		(allowed-values FALSE TRUE)
+		(default FALSE)
+;+		(cardinality 1 1)
+		(create-accessor read-write))
+	(single-slot precio
+;+		(comment "Precio mensual")
+		(type FLOAT)
+;+		(cardinality 1 1)
+		(create-accessor read-write))
+	(single-slot sol
+;+		(comment "Indica en qué momento del dia la vivienda recibe impacto de la luz solar")
+		(type SYMBOL)
+		(allowed-values manana tarde todo-el-dia)
+;+		(cardinality 0 1)
+		(create-accessor read-write))
+	(single-slot altura
+;+		(comment "Altura del piso")
+		(type INTEGER)
+;+		(cardinality 0 1)
+		(create-accessor read-write))
+	(single-slot electrodomesticos
+;+		(comment "Booleano que indica si la vivienda incluye electrodomésticos")
+		(type SYMBOL)
+		(allowed-values FALSE TRUE)
+;+		(cardinality 1 1)
+		(create-accessor read-write))
+	(single-slot calefaccion
+;+		(comment "Booleano que indica si la vivienda tiene calefacción")
+		(type SYMBOL)
+		(allowed-values FALSE TRUE)
+;+		(cardinality 1 1)
+		(create-accessor read-write))
+	(single-slot piscina-comunitaria
+;+		(comment "Booleano que indica si la vivienda tiene piscina comunitaria con acceso a ella")
+		(type SYMBOL)
+		(allowed-values FALSE TRUE)
+;+		(cardinality 1 1)
+		(create-accessor read-write))
+	(single-slot terraza
+;+		(comment "Booleano que indica si la vivienda tiene terraza")
+		(type SYMBOL)
+		(allowed-values FALSE TRUE)
+;+		(cardinality 1 1)
+		(create-accessor read-write))
+	(single-slot buenas-vistas
+;+		(comment "Booleano que indica si la vivienda tiene vistas")
+		(type SYMBOL)
+		(allowed-values FALSE TRUE)
+;+		(cardinality 1 1)
+		(create-accessor read-write))
+	(single-slot mascotas-permitidas
+;+		(comment "Booleano que indica si las mascotas están prohibidas en esta vivienda")
+		(type SYMBOL)
+		(allowed-values FALSE TRUE)
+;+		(cardinality 1 1)
+		(create-accessor read-write))
+	(single-slot localizacion
+;+		(comment "Localización de la vivienda (coordenadas X e Y)")
+		(type INSTANCE)
+;+		(allowed-classes Coordinates)
+;+		(cardinality 1 1)
+		(create-accessor read-write))
+	(single-slot parking
+;+		(comment "Booleano que indica si la vivienda incluye plaza de parking")
+		(type SYMBOL)
+		(allowed-values FALSE TRUE)
+;+		(cardinality 1 1)
+		(create-accessor read-write))
+	(single-slot balcon
+;+		(comment "Booleano que indica si la vivienda tiene balcón")
+		(type SYMBOL)
+		(allowed-values FALSE TRUE)
+;+		(cardinality 1 1)
+		(create-accessor read-write))
+	(single-slot dormitorios-dobles
+;+		(comment "Número de dormitorios dobles de la vivienda")
+		(type INTEGER)
+		(range 0 %3FVARIABLE)
+;+		(cardinality 1 1)
+		(create-accessor read-write))
+	(single-slot area
+;+		(comment "Superfície en metros cuadrados de la vivienda")
+		(type FLOAT)
+;+		(cardinality 1 1)
+		(create-accessor read-write))
+	(single-slot tipo
+		(type SYMBOL)
+		(allowed-values piso duplex unifamiliar)
+;+		(cardinality 1 1)
+		(create-accessor read-write))
+	(single-slot dormitorios-simples
+;+		(comment "Número de dormitorios simples de la vivienda")
+		(type INTEGER)
+		(range 0 %3FVARIABLE)
+;+		(cardinality 1 1)
+		(create-accessor read-write))
+	(single-slot altura-maxima
+;+		(comment "Número que indica el piso más alto del edificio en caso de ser un piso.")
+		(type INTEGER)
+;+		(cardinality 0 1)
+		(create-accessor read-write))
+	(single-slot amueblado
+;+		(comment "Booleano que indica si la vivienda está amueblada")
+		(type SYMBOL)
+		(allowed-values FALSE TRUE)
+;+		(cardinality 1 1)
+		(create-accessor read-write))
+	(single-slot aire-acondicionado
+;+		(comment "Booleano que indica si la vivienda tiene aire acondicionado")
+		(type SYMBOL)
+		(allowed-values FALSE TRUE)
+;+		(cardinality 1 1)
+		(create-accessor read-write))
+	(single-slot ascensor
+;+		(comment "Booleano que indica si tiene ascensor en caso de que el tipo de vivienda sea: piso. En caso contrario, este slot no contiene información útil.")
+		(type SYMBOL)
+		(allowed-values FALSE TRUE)
+		(default FALSE)
+;+		(cardinality 0 1)
+		(create-accessor read-write)))
+
+(defclass Coordinates "Clase coordenadas que contiene información sobre los ejes X e Y de otra clase."
+	(is-a USER)
+	(role concrete)
+	(single-slot Y
+		(type INTEGER)
+;+		(cardinality 0 1)
+		(create-accessor read-write))
+	(single-slot X
+		(type INTEGER)
+;+		(cardinality 0 1)
+		(create-accessor read-write)))
+
+(defclass Servicio "Clase que se encarga de almacenar la posición y el tipo de servicio que se ofrece en una población"
+	(is-a USER)
+	(role concrete)
+	(single-slot localizacion-servicio
+;+		(comment "Localización del servicio")
+		(type INSTANCE)
+;+		(allowed-classes Coordinates)
+;+		(cardinality 1 1)
+		(create-accessor read-write))
+	(single-slot tipo-servicio
+;+		(comment "Tipo de servicio que se ofrece en una ciudad. Puede ser de tipo:\n- Centro médico\n- Colegio\n- Supermercado\n- Hipermercado\n- Zona verde\n- Discoteca\n- Transporte público\n- Gimnasio\n- Biblioteca\n- Restaurante")
+		(type SYMBOL)
+		(allowed-values centro-medico colegio supermercado hipermercado zona-verde discoteca transporte-publico gimnasio biblioteca restaurante)
+;+		(cardinality 1 1)
+		(create-accessor read-write)))
