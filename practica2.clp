@@ -967,6 +967,16 @@
         (allowed-values manana tarde todo-el-dia))
     (slot mascotas-permitidas (type SYMBOL)
         (allowed-values FALSE TRUE))
+    (slot ninos (type SYMBOL)
+        (allowed-values FALSE TRUE))
+    (slot jovenes (type SYMBOL)
+        (allowed-values FALSE TRUE))
+    (slot estudiantes (type SYMBOL)
+        (allowed-values FALSE TRUE))
+    (slot trabajadores (type SYMBOL)
+        (allowed-values FALSE TRUE))
+    (slot jubilados (type SYMBOL)
+        (allowed-values FALSE TRUE))
 )
 
 ;; Lista de recomendaciones sin orden que se procesan y todavía no han sido descartadas
@@ -1426,6 +1436,21 @@
     (assert (servicios-preguntado))
 )
 
+(defrule recopilacion::preguntar-grupos-edades "Pregunta qué tipos de ocupantes habrá en la vivienda"
+    (declare (salience -13))
+    ?usuario <- (usuario)
+    (not (grupos-edades-preguntado))
+    ?hecho-servicios <- (lista-servicios-cerca (servicios $?lista-servicios-cercanos))
+    =>
+    (bind ?ninos (pregunta-si-no "¿Habrá niños en la vivienda?"))
+    (bind ?trabajadores (pregunta-si-no "¿Alguno de los ocupantes trabaja?"))
+    (bind ?estudiantes (pregunta-si-no "¿Alguno de los ocupantes estudia?"))
+    (bind ?jovenes (pregunta-si-no "¿Hay algun ocupante entre 20 y a 30 años?"))
+    (bind ?jubilados (pregunta-si-no "¿Hay algun ocupante mayor a 60 años?"))
+    (modify ?usuario (ninos ?ninos) (trabajadores ?trabajadores) (estudiantes ?estudiantes) (jovenes ?jovenes) (jubilados ?jubilados))
+    (assert (grupos-edades-preguntado))
+)
+
 (defrule recopilacion::pasar-modulo-procesado "Pasa al módulo de procesado de información"
     (declare (salience -100))
     =>
@@ -1828,9 +1853,102 @@
     (assert (filtrar-distancia-servicios ?rec))
 )
 
+(defrule procesado::jovenes-discoteca "Es recomendable que haya discotecas cercanas para los jóvenes"
+    ?u <- (usuario (jovenes ?jovenes))
+    (test (eq TRUE ?jovenes))
+    ?rec <- (object (is-a Recomendacion) (vivienda ?v))
+    (not (filtrar-jovenes-discoteca ?rec))
+    ?hecho-servicios <- (lista-servicios-cerca (servicios $?lista-servicios-cercanos))
+    (test (not (member$ discoteca $?lista-servicios-cercanos)))
+    (test (eq TRUE (funcall hay-servicio-cercano ?v discoteca)))
+    =>
+    (send ?rec muy-recomendable "Hay cerca una o más discotecas")
+    (assert (filtrar-jovenes-discoteca ?rec))
+)
+
+(defrule procesado::ninos-colegio "Es recomendable que haya colegios cercanos para los niños"
+    ?u <- (usuario (ninos ?ninos))
+    (test (eq TRUE ?ninos))
+    ?rec <- (object (is-a Recomendacion) (vivienda ?v))
+    (not (filtrar-ninos-colegio ?rec))
+    ?hecho-servicios <- (lista-servicios-cerca (servicios $?lista-servicios-cercanos))
+    (test (not (member$ colegio $?lista-servicios-cercanos)))
+    (test (eq TRUE (funcall hay-servicio-cercano ?v colegio)))
+    =>
+    (send ?rec muy-recomendable "Hay cerca uno o más colegios")
+    (assert (filtrar-ninos-colegio ?rec))
+)
+
+(defrule procesado::ninos-jubilados-zonas-verdes "Es recomendable que haya zonas verdes cercanas para los niños y jubilados"
+    ?u <- (usuario (ninos ?ninos) (jubilados ?jubilados))
+    (test (or (eq TRUE ?ninos) (eq TRUE ?jubilados)))
+    ?rec <- (object (is-a Recomendacion) (vivienda ?v))
+    (not (filtrar-ninos-jubilados-zonas-verdes ?rec))
+    ?hecho-servicios <- (lista-servicios-cerca (servicios $?lista-servicios-cercanos))
+    (test (not (member$ zona-verde $?lista-servicios-cercanos)))
+    (test (eq TRUE (funcall hay-servicio-cercano ?v zona-verde)))
+    =>
+    (send ?rec muy-recomendable "Hay cerca una o más zonas verdes")
+    (assert (filtrar-ninos-jubilados-zonas-verdes ?rec))
+)
+
+(defrule procesado::trabajadores-estudiantes-transporte "Es recomendable que haya transporte público cercanos para trabajadores y estudiantes"
+    ?u <- (usuario (trabajadores ?trabajadores) (estudiantes ?estudiantes))
+    (test (or (eq TRUE ?trabajadores) (eq TRUE ?estudiantes)))
+    ?rec <- (object (is-a Recomendacion) (vivienda ?v))
+    (not (filtrar-trabajadores-estudiantes-transporte ?rec))
+    ?hecho-servicios <- (lista-servicios-cerca (servicios $?lista-servicios-cercanos))
+    (test (not (member$ transporte-publico $?lista-servicios-cercanos)))
+    (test (eq TRUE (funcall hay-servicio-cercano ?v transporte-publico)))
+    =>
+    (send ?rec muy-recomendable "Hay cerca uno o más servicios de transporte público")
+    (assert (filtrar-trabajadores-estudiantes-transporte ?rec))
+)
+
+(defrule procesado::estudiantes-biblioteca "Es recomendable que haya bibliotecas cercanos para los estudiantes"
+    ?u <- (usuario (estudiantes ?estudiantes))
+    (test (eq TRUE ?estudiantes))
+    ?rec <- (object (is-a Recomendacion) (vivienda ?v))
+    (not (filtrar-estudiantes-biblioteca ?rec))
+    ?hecho-servicios <- (lista-servicios-cerca (servicios $?lista-servicios-cercanos))
+    (test (not (member$ biblioteca $?lista-servicios-cercanos)))
+    (test (eq TRUE (funcall hay-servicio-cercano ?v biblioteca)))
+    =>
+    (send ?rec muy-recomendable "Hay cerca una o más bibliotecas")
+    (assert (filtrar-estudiantes-biblioteca ?rec))
+)
+
+(defrule procesado::jubilados-medico "Es recomendable que haya centros médicos cercanos para los jubilados"
+    ?u <- (usuario (jubilados ?jubilados))
+    (test (eq TRUE ?jubilados))
+    ?rec <- (object (is-a Recomendacion) (vivienda ?v))
+    (not (filtrar-jubilados-medico ?rec))
+    ?hecho-servicios <- (lista-servicios-cerca (servicios $?lista-servicios-cercanos))
+    (test (not (member$ centro-medico $?lista-servicios-cercanos)))
+    (test (eq TRUE (funcall hay-servicio-cercano ?v centro-medico)))
+    =>
+    (send ?rec muy-recomendable "Hay cerca uno o más centros médicos")
+    (assert (filtrar-jubilados-medico ?rec))
+)
+
+(defrule procesado::matrimonio-hipermercado "Es recomendable que haya hipermercados cercanos para los matrimonios"
+    ?u <- (usuario (dormitorios-dobles ?dormitorios-dobles))
+    (test (eq TRUE (> ?dormitorios-dobles 0))) ;; Suponemos que si necesitan un dormitorio doble hay un matrimonio
+    ?rec <- (object (is-a Recomendacion) (vivienda ?v))
+    (not (filtrar-matrimonio-hipermercado ?rec))
+    ?hecho-servicios <- (lista-servicios-cerca (servicios $?lista-servicios-cercanos))
+    (test (not (member$ hipermercado $?lista-servicios-cercanos)))
+    (test (eq TRUE (funcall hay-servicio-cercano ?v hipermercado)))
+    =>
+    (send ?rec muy-recomendable "Hay cerca uno o más hipermercados")
+    (assert (filtrar-matrimonio-hipermercado ?rec))
+)
+
 (defrule procesado::supermercado-cercano "Es recomendable que haya supermercado cercanos"
     ?rec <- (object (is-a Recomendacion) (vivienda ?v))
     (not (filtrar-super ?rec))
+    ?hecho-servicios <- (lista-servicios-cerca (servicios $?lista-servicios-cercanos))
+    (test (not (member$ supermercado $?lista-servicios-cercanos)))
     (test (eq TRUE (funcall hay-servicio-cercano ?v supermercado)))
     =>
     (send ?rec muy-recomendable "Hay cerca uno o más supermercados")
@@ -1840,6 +1958,8 @@
 (defrule procesado::gimnasio-cercano "Es recomendable que haya gimnasios cercanos"
     ?rec <- (object (is-a Recomendacion) (vivienda ?v))
     (not (filtrar-gimnasio ?rec))
+    ?hecho-servicios <- (lista-servicios-cerca (servicios $?lista-servicios-cercanos))
+    (test (not (member$ gimnasio $?lista-servicios-cercanos)))
     (test (eq TRUE (funcall hay-servicio-cercano ?v gimnasio)))
     =>
     (send ?rec muy-recomendable "Hay cerca uno o más gimnasios")
@@ -1849,6 +1969,8 @@
 (defrule procesado::restaurante-cercano "Es recomendable que haya restaurante cercanos"
     ?rec <- (object (is-a Recomendacion) (vivienda ?v))
     (not (filtrar-restaurante ?rec))
+    ?hecho-servicios <- (lista-servicios-cerca (servicios $?lista-servicios-cercanos))
+    (test (not (member$ restaurante $?lista-servicios-cercanos)))
     (test (eq TRUE (funcall hay-servicio-cercano ?v restaurante)))
     =>
     (send ?rec muy-recomendable "Hay cerca uno o más restaurantes")
