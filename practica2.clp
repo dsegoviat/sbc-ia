@@ -953,7 +953,7 @@
         (allowed-values FALSE TRUE))
     (slot ascensor (type SYMBOL)
         (allowed-values FALSE TRUE))
-    (slot mobilidad-reducida (type SYMBOL)
+    (slot adaptada-mobilidad-reducida (type SYMBOL)
         (allowed-values FALSE TRUE))
     (slot altura (type INTEGER))
     (slot parking (type SYMBOL)
@@ -1029,6 +1029,11 @@
     (format t "(%d, %d)" ?self:X ?self:Y)
 )
 
+;; Devuelve TRUE si y sólo si tiene sentido que tuviera ascensor, aunque no lo tenga (piso o duplex)
+(defmessage-handler MAIN::Vivienda puede-tener-ascensor ()
+    (or (eq ?self:tipo piso) (eq self:tipo duplex))
+)
+
 ;; Imprime los datos de una Vivienda
 (defmessage-handler MAIN::Vivienda imprimir ()
 	(printout t "Localización: ")
@@ -1044,6 +1049,10 @@
     (format t "%nAire acondicionado: %s" ?self:aire-acondicionado)
     (format t "%nCalefacción: %s" ?self:calefaccion)
     (format t "%nPiscina: %s" ?self:piscina-comunitaria)
+    (if ((send ?self puede-tener-ascensor))
+        (format t "%nAscensor: %s" ?self:ascensor)
+    )
+    (format t "%nAdaptada para mobilidad reducida: " ?self:adaptada-mobilidad-reducida)
     (printout t crlf)
 )
 
@@ -1090,6 +1099,11 @@
 ;; Obtiene el número de personas que pueden dormir en la vivienda recomendada
 (defmessage-handler MAIN::Recomendacion get-personas ()
     (+ (send ?self:vivienda get-dormitorios-simples) (* 2 (send ?self:vivienda get-dormitorios-dobles)))
+)
+
+;; Devuelve TRUE si y sólo si la vivienda recomendada tiene sentido que tuviera ascensor, aunque no lo tenga (piso o duplex)
+(defmessage-handler MAIN::Recomendacion puede-tener-ascensor ()
+    (or (eq ?self:tipo piso) (eq self:tipo duplex))
 )
 
 ;;-------------------------------------------------------------------------------------------------------------
@@ -1303,6 +1317,29 @@
     (bind ?piscina-comunitaria (pregunta-si-no "¿Quiere que la vivienda tenga piscina comunitaria o propia?"))
     (modify ?usuario (piscina-comunitaria ?piscina-comunitaria))
     (assert (piscina-comunitaria-preguntado))
+)
+
+(defrule recopilacion::preguntar-adaptada-mobilidad-reducida "Pregunta si el usuario tiene mobilidad reducida"
+    (declare (salience -8))
+    ?usuario <- (usuario)
+    (not (adaptada-mobilidad-reducida-preguntado))
+    =>
+    (bind ?adaptada-mobilidad-reducida (pregunta-si-no "¿Alguno de los ocupantes tiene mobilidad reducida?"))
+    (modify ?usuario (adaptada-mobilidad-reducida ?adaptada-mobilidad-reducida) (ascensor ?adaptada-mobilidad-reducida))
+    (assert (adaptada-mobilidad-reducida-preguntado))
+)
+
+;; Sólo si no tiene mobilidad reducida (en ese caso necesitará ascensor)
+(defrule recopilacion::preguntar-ascensor "Pregunta si el usuario quiere ascensor para las viviendas de más de 1 planta"
+    (declare (salience -9))
+    (adaptada-mobilidad-reducida-preguntado)
+    ?usuario <- (usuario (adaptada-mobilidad-reducida ?adaptada-mobilidad-reducida))
+    (not (ascensor-preguntado))
+    (test (eq FALSE ?adaptada-mobilidad-reducida))
+    =>
+    (bind ?ascensor (pregunta-si-no "En caso de que la vivienda tenga más de 1 planta, ¿quiere que tenga ascensor?"))
+    (modify ?usuario (ascensor ?ascensor))
+    (assert (ascensor-preguntado))
 )
 
 (defrule recopilacion::pasar-modulo-procesado "Pasa al módulo de procesado de información"
@@ -1536,12 +1573,52 @@
     (declare (salience -1))
     ?u <- (usuario (piscina-comunitaria ?piscina-comunitaria))
     ?rec <- (object (is-a Recomendacion) (vivienda ?v))
-    ;; No ha pedido  acceso a la piscina comunitaria pero lo tiene
+    ;; No ha pedido acceso a la piscina comunitaria pero lo tiene
     (test (eq TRUE (and (eq FALSE ?piscina-comunitaria) (eq TRUE (send ?v get-piscina-comunitaria)))))
     (not (filtrar-piscina-comunitaria ?rec))
     =>
     (send ?rec muy-recomendable "Tiene piscina aunque no lo haya pedido")
     (assert (filtrar-piscina-comunitaria ?rec))
+)
+
+;; ASCENSOR
+
+(defrule procesado::descartar-ascensor "No se cumple las restricción de ascensor"
+    ?u <- (usuario (ascensor ?ascensor))
+    ?rec <- (object (is-a Recomendacion) (vivienda ?v))
+    (test (eq TRUE (send ?v puede-tener-ascensor)))
+    ;; Ha pedido ascensor y no lo tiene
+    (test (eq TRUE (and (eq TRUE ?ascensor) (not (send ?v get-ascensor)))))
+    (not (filtrar-ascensor ?rec))
+    =>
+    (send ?rec parcialmente-recomendable "No tiene ascensor")
+    (assert (filtrar-ascensor ?rec))
+)
+
+(defrule procesado::ascensor-muy-recomendable "Tiene ascensor aunque no lo haya pedido"
+    (declare (salience -1))
+    ?u <- (usuario (ascensor ?ascensor))
+    ?rec <- (object (is-a Recomendacion) (vivienda ?v))
+    (test (eq TRUE (send ?v puede-tener-ascensor)))
+    ;; No ha pedido ascensor pero lo tiene
+    (test (eq TRUE (and (eq FALSE ?ascensor) (eq TRUE (send ?v get-ascensor)))))
+    (not (filtrar-ascensor ?rec))
+    =>
+    (send ?rec muy-recomendable "Tiene ascensor aunque no lo haya pedido")
+    (assert (filtrar-ascensor ?rec))
+)
+
+;; MOBILIDAD REDUCIDA
+
+(defrule procesado::descartar-mobilidad-reducida "No se cumple las restricción de mobilidad reducida"
+    ?u <- (usuario (adaptada-mobilidad-reducida ?adaptada-mobilidad-reducida))
+    ?rec <- (object (is-a Recomendacion) (vivienda ?v))
+    ;; Ha pedido que la vivienda esté adaptada a mobilidad reducida y no lo está
+    (test (eq TRUE (and (eq TRUE ?adaptada-mobilidad-reducida) (not (send ?v get-adaptada-mobilidad-reducida)))))
+    (not (filtrar-adaptada-mobilidad-reducida ?rec))
+    =>
+    (send ?rec parcialmente-recomendable "No está adaptada para mobilidad reducida")
+    (assert (filtrar-adaptada-mobilidad-reducida ?rec))
 )
 
 (defrule procesado::pasar-modulo-generacion "Pasa al módulo de generación de resultados"
