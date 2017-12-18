@@ -1041,6 +1041,8 @@
     (format t "%nBalcón: %s" ?self:balcon)
     (format t "%nAmueblado: %s" ?self:amueblado)
     (format t "%nElectrodomesticos: %s" ?self:electrodomesticos)
+    (format t "%nAire acondicionado: %s" ?self:aire-acondicionado)
+    (format t "%nCalefacción: %s" ?self:calefaccion)
     (printout t crlf)
 )
 
@@ -1281,6 +1283,17 @@
     (assert (amueblado-electrodomesticos-preguntado))
 )
 
+(defrule recopilacion::preguntar-calefaccion-aire-acondicionado "Pregunta si el usuario quiere la vivienda con calefaccion o con aire acondicionado"
+    (declare (salience -6))
+    ?usuario <- (usuario)
+    (not (calefaccion-aire-acondicionado-preguntado))
+    =>
+    (bind ?calefaccion (pregunta-si-no "¿Necesita que la vivienda tenga calefacción?"))
+    (bind ?aire-acondicionado (pregunta-si-no "¿Necesita la vivienda con aire acondicionado?"))
+    (modify ?usuario (calefaccion ?calefaccion) (aire-acondicionado ?aire-acondicionado))
+    (assert (calefaccion-aire-acondicionado-preguntado))
+)
+
 (defrule recopilacion::pasar-modulo-procesado "Pasa al módulo de procesado de información"
     (declare (salience -100))
     =>
@@ -1468,6 +1481,31 @@
     =>
     (send ?rec muy-recomendable "Tiene electrodomesticos o está amueblada aunque no lo haya pedido")
     (assert (filtrar-amueblado-electrodomesticos ?rec))
+)
+
+;; CALEFACCIÓN O AIRE ACONDICIONADO
+
+(defrule procesado::descartar-calefaccion-aire-acondicionado "No se cumplen las restricciones de calefacción o aire acondicionado"
+    ?u <- (usuario (calefaccion ?calefaccion) (aire-acondicionado ?aire-acondicionado))
+    ?rec <- (object (is-a Recomendacion) (vivienda ?v))
+    ;; Ha pedido calefacción y no tiene o ha pedido aire acondicionado y no tiene
+    (test (eq TRUE (or (and (eq TRUE ?calefaccion) (not (send ?v get-calefaccion))) (and (eq TRUE ?aire-acondicionado) (not (send ?v get-aire-acondicionado))))))
+    (not (filtrar-calefaccion-aire-acondicionado ?rec))
+    =>
+    (send ?rec parcialmente-recomendable "No se cumplen las restricciones de calefacción o aire acondicionado")
+    (assert (filtrar-calefaccion-aire-acondicionado ?rec))
+)
+
+(defrule procesado::calefaccion-aire-acondicionado-muy-recomendable "Tiene calefacción o aire acondicionado aunque no lo haya pedido"
+    (declare (salience -1))
+    ?u <- (usuario (calefaccion ?calefaccion) (aire-acondicionado ?aire-acondicionado))
+    ?rec <- (object (is-a Recomendacion) (vivienda ?v))
+    ;; No ha pedido que tenga calefacción o aire acondicionado pero los tiene
+    (test (eq TRUE (or (and (eq FALSE ?calefaccion) (eq TRUE (send ?v get-calefaccion))) (and (eq FALSE ?aire-acondicionado) (eq TRUE (send ?v get-aire-acondicionado))))))
+    (not (filtrar-calefaccion-aire-acondicionado ?rec))
+    =>
+    (send ?rec muy-recomendable "Tiene calefacción o aire acondicionado aunque no lo haya pedido")
+    (assert (filtrar-calefaccion-aire-acondicionado ?rec))
 )
 
 (defrule procesado::pasar-modulo-generacion "Pasa al módulo de generación de resultados"
