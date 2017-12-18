@@ -378,6 +378,7 @@
 ;; Módulo de presentacion de resultados
 (defmodule presentacion
     (import MAIN ?ALL)
+    (import generacion ?ALL)
     (export ?ALL)
 )
 
@@ -431,24 +432,28 @@
 )
 
 ;; Lista de recomendaciones sin orden que no son ni siquiera parcialmente adecuadas (más de 2 restricciones que no se cumplen)
+;; Antes de mostrar los resultados se ordenará
 (deftemplate MAIN::lista-descartadas
 	(multislot recomendaciones (type INSTANCE))
 ;+	(allowed-classes Recomendacion)
 )
 
 ;; Lista de recomendaciones clasificadas como adecuadas
+;; Antes de mostrar los resultados se ordenará
 (deftemplate MAIN::lista-adecuadas
     (multislot recomendaciones (type INSTANCE))
 ;+  (allowed-classes Recomendacion)
 )
 
 ;; Lista de recomendaciones clasificadas como parcialmente adecuadas
+;; Antes de mostrar los resultados se ordenará
 (deftemplate MAIN::lista-parcialmente-adecuadas
     (multislot recomendaciones (type INSTANCE))
 ;+  (allowed-classes Recomendacion)
 )
 
 ;; Lista de recomendaciones clasificadas como muy recomendables
+;; Antes de mostrar los resultados se ordenará
 (deftemplate MAIN::lista-muy-recomendables
     (multislot recomendaciones (type INSTANCE))
 ;+  (allowed-classes Recomendacion)
@@ -517,16 +522,28 @@
     (printout t "-----------------------------------" crlf)
 )
 
+;; Obtiene el precio de la vivienda recomendada
+(defmessage-handler MAIN::Recomendacion get-precio ()
+    (send ?self:vivienda get-precio)
+)
+
+;; Añade una característica muy recomendable
 (defmessage-handler MAIN::Recomendacion muy-recomendable (?justificacion)
     (slot-insert$ ?self caracteristicas-muy-recomendables (+ (length$ ?self:caracteristicas-muy-recomendables) 1) ?justificacion)
 )
 
+;; Añade una característica no recomendable (requisito no satisfecho) y, en caso de que haya más de 2, invalida la recomendación
 (defmessage-handler MAIN::Recomendacion parcialmente-recomendable (?justificacion)
     (bind ?cantidad (+ 1 (length$ ?self:caracteristicas-no-recomendables)))
     (slot-insert$ ?self caracteristicas-no-recomendables ?cantidad ?justificacion)
     (if (> ?cantidad 2) then
         (assert (invalida ?self))
     )
+)
+
+;; Obtiene el número de personas que pueden dormir en la vivienda recomendada
+(defmessage-handler MAIN::Recomendacion get-personas ()
+    (+ (send ?self:vivienda get-dormitorios-simples) (* 2 (send ?self:vivienda get-dormitorios-dobles)))
 )
 
 ;;-------------------------------------------------------------------------------------------------------------
@@ -765,7 +782,6 @@
     (test (eq TRUE (or (and ?estricto (> (send ?v get-precio) ?maximo)) (and (not ?estricto) (> (send ?v get-precio) (* 1.3 ?maximo))))))
     (not (filtrar-precio ?rec))
     =>
-    (debug-instance "Precio no recomendable" ?rec)
     (assert (invalida ?rec))
     (assert (filtrar-precio ?rec))
 )
@@ -840,12 +856,60 @@
 )
 
 (defrule procesado::pasar-modulo-generacion "Pasa al módulo de generación de resultados"
-    (declare (salience -1))
+    (declare (salience -2))
     =>
     (focus generacion)
 )
 
 ;; GENERACIÓN DE RESULTADOS
+
+;; ORDENACIÓN
+;; El criterio de ordenación es el siguiente (si hay empate se pasa al siguiente criterio):
+;; 1- Por cantidad de personas que caben (dormitorios-simples + 2*dormitorios-dobles) descendentemente
+;; 2- Por precio ascendentemente
+;; 3- Por cantidad de características muy recomendables descendentemente
+;; 4- Por cantidad de características no recomendables ascendentemente
+
+(deffunction generacion::rec-compare (?a ?b)
+    (bind ?criterio-personas (< (send ?a get-personas) (send ?b get-personas)))
+    (if (eq ?criterio-personas 0) then
+        (bind ?criterio-precio (> (send ?a get-precio) (send ?b get-precio)))
+        (if (eq ?criterio-precio 0) then
+            (bind ?criterio-muy-recomendable (< (send ?a get-caracteristicas-muy-recomendables) (send ?b get-caracteristicas-muy-recomendables)))
+            (if (eq ?criterio-muy-recomendable 0) then
+                (bind ?criterio-no-recomendable (> (send ?a get-caracteristicas-no-recomendables) (send ?b get-caracteristicas-no-recomendables)))
+                ?criterio-no-recomendable
+            else
+                ?criterio-muy-recomendable
+            )
+        else
+            ?criterio-precio
+        )
+    else
+        ?criterio-personas
+    )
+)
+
+(defrule generacion::ordenar-validas "Ordena las recomendaciones válidas"
+    ?hecho-validas <- (lista-validas (recomendaciones $?validas))
+    (test (eq TRUE (> (length$ $?validas) 0)))
+    (not (lista-validas-ordenada))
+    =>
+    (bind ?validas-ordenadas (sort rec-compare $?validas))
+    (modify ?hecho-validas (recomendaciones ?validas-ordenadas))
+    (assert (lista-validas-ordenada))
+)
+
+(defrule generacion::ordenar-descartadas "Ordena las recomendaciones descartadas si no hay ninguna válida"
+    ?hecho-validas <- (lista-validas (recomendaciones $?validas))
+    ?hecho-descartadas <- (lista-descartadas (recomendaciones $?descartadas))
+    (test (eq (length$ $?validas) 0))
+    (not (lista-descartadas-ordenada))
+    =>
+    (bind ?descartadas-ordenadas (sort rec-compare $?descartadas))
+    (modify ?hecho-descartadas (recomendaciones ?descartadas-ordenadas))
+    (assert (lista-descartadas-ordenada))
+)
 
 ;; ADECUADAS
 
@@ -906,24 +970,25 @@
 
 ;; CLASIFICACIÓN
 
-(defrule generacion::clasificar-validas "Clasifica las recomendaciones válidas en 'Muy recomendable', 'Adecuada' o 'Parcialmente adecuada'"
-    ?rec <- (object (is-a Recomendacion))
+(defrule generacion::clasificar-validas "Clasifica ordenadamente las recomendaciones válidas en 'Muy recomendable', 'Adecuada' o 'Parcialmente adecuada'"
     ?hecho-validas <- (lista-validas (recomendaciones $?validas))
-    (test (member$ ?rec $?validas))
-    (not (clasificada ?rec))
+    (lista-validas-ordenada)
+    (not (clasificadas))
     =>
-    (bind ?cantidad-no-recomendables (length$ (send ?rec get-caracteristicas-no-recomendables)))
-    (bind ?cantidad-muy-recomendables (length$ (send ?rec get-caracteristicas-muy-recomendables)))
-    (if (> ?cantidad-no-recomendables 0) then
-        (assert (parcialmente-adecuada ?rec))
-    else
-        (if (> ?cantidad-muy-recomendables 0) then
-            (assert (muy-recomendable ?rec))
+    (progn$ (?rec $?validas)
+        (bind ?cantidad-no-recomendables (length$ (send ?rec get-caracteristicas-no-recomendables)))
+        (bind ?cantidad-muy-recomendables (length$ (send ?rec get-caracteristicas-muy-recomendables)))
+        (if (> ?cantidad-no-recomendables 0) then
+            (assert (parcialmente-adecuada ?rec))
         else
-            (assert (adecuada ?rec))
+            (if (> ?cantidad-muy-recomendables 0) then
+                (assert (muy-recomendable ?rec))
+            else
+                (assert (adecuada ?rec))
+            )
         )
     )
-    (assert (clasificada ?rec))
+    (assert (clasificadas))
 )
 
 (defrule generacion::pasar-modulo-presentacion "Pasa al módulo de presentación de resultados"
@@ -934,39 +999,47 @@
 
 ;; PRESENTACIÓN DE RECOMENDACIONES
 
-(defrule presentacion::mostrar-viviendas "Muestra las viviendas recomendadas"
+(defrule presentacion::mostrar-viviendas "Muestra las viviendas recomendadas válidas"
     ?hecho-muy-recomendable <- (lista-muy-recomendables (recomendaciones $?muy-recomendables))
     ?hecho-adecuadas <- (lista-adecuadas (recomendaciones $?adecuadas))
     ?hecho-parcialmente-adecuadas <- (lista-parcialmente-adecuadas (recomendaciones $?parcialmente-adecuadas))
     ?hecho-validas <- (lista-validas (recomendaciones $?validas))
-    ?hecho-descartadas <- (lista-descartadas (recomendaciones $?descartadas))
+    (test (eq TRUE (> (length$ $?validas) 0)))
     (not (fin))
 	=>
-    (if (eq (length$ $?validas) 0) then
-        (printout t crlf "No tenemos ninguna recomendación que cumpla con los requisitos indicados pero quizás te puedan interesar algunas de estas viviendas:" crlf)
-        (loop-for-count (?i 1 (min 5 (length$ $?descartadas))) do ;; Muestra como máximo 5
-            (send (nth$ ?i $?descartadas) imprimir)
+    (printout t crlf "Estas son nuestras recomendaciones: " crlf)
+    (if (> (length$ $?muy-recomendables) 0) then
+        (printout t crlf "MUY RECOMENDABLES" crlf)
+        (progn$ (?rec $?muy-recomendables)
+            (send ?rec imprimir)
         )
-    else
-        (printout t crlf "Estas son nuestras recomendaciones: " crlf)
-        (if (> (length$ $?muy-recomendables) 0) then
-            (printout t crlf "MUY RECOMENDABLES" crlf)
-            (progn$ (?rec $?muy-recomendables)
-                (send ?rec imprimir)
-            )
+    )
+    (if (> (length$ $?adecuadas) 0) then
+        (printout t crlf "ADECUADAS" crlf)
+        (progn$ (?rec $?adecuadas)
+            (send ?rec imprimir)
         )
-        (if (> (length$ $?adecuadas) 0) then
-            (printout t crlf "ADECUADAS" crlf)
-            (progn$ (?rec $?adecuadas)
-                (send ?rec imprimir)
-            )
+    )
+    (if (> (length$ $?parcialmente-adecuadas) 0) then
+        (printout t crlf "PARCIALMENTE ADECUADAS" crlf)
+        (progn$ (?rec $?parcialmente-adecuadas)
+            (send ?rec imprimir)
         )
-        (if (> (length$ $?parcialmente-adecuadas) 0) then
-            (printout t crlf "PARCIALMENTE ADECUADAS" crlf)
-            (progn$ (?rec $?parcialmente-adecuadas)
-                (send ?rec imprimir)
-            )
-        )
+    )
+    (assert (fin))
+)
+
+(defrule presentacion::mostrar-descartadas "Muestra las viviendas descartadas si no hay ninguna válida"
+    ?hecho-validas <- (lista-validas (recomendaciones $?validas))
+    ?hecho-descartadas <- (lista-descartadas (recomendaciones $?descartadas))
+    (test (eq (length$ $?validas) 0))
+    (lista-descartadas-ordenada)
+    (not (fin))
+    =>
+    (printout t crlf "No tenemos ninguna recomendación que cumpla con los requisitos indicados." crlf
+        "Aún así, quizás te puedan interesar algunas de estas viviendas:" crlf)
+    (loop-for-count (?i 1 (min 5 (length$ $?descartadas))) do ;; Muestra como máximo 5
+        (send (nth$ ?i $?descartadas) imprimir)
     )
     (assert (fin))
 )
