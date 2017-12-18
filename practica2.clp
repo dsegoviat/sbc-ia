@@ -24,9 +24,10 @@
 (defclass %3ACLIPS_TOP_LEVEL_SLOT_CLASS "Fake class to save top-level slot information"
     (is-a USER)
     (role abstract)
-    (single-slot altura
-;+      (comment "Altura del piso")
-        (type INTEGER)
+    (single-slot sol
+;+      (comment "Indica en qué momento del dia la vivienda recibe impacto de la luz solar")
+        (type SYMBOL)
+        (allowed-values manana tarde todo-el-dia)
 ;+      (cardinality 0 1)
         (create-accessor read-write))
     (single-slot parking
@@ -35,37 +36,16 @@
         (allowed-values FALSE TRUE)
 ;+      (cardinality 1 1)
         (create-accessor read-write))
-    (single-slot Y
-        (type INTEGER)
-;+      (cardinality 0 1)
-        (create-accessor read-write))
-    (single-slot terraza
-;+      (comment "Booleano que indica si la vivienda tiene terraza")
-        (type SYMBOL)
-        (allowed-values FALSE TRUE)
-;+      (cardinality 1 1)
-        (create-accessor read-write))
-    (single-slot X
-        (type INTEGER)
-;+      (cardinality 0 1)
-        (create-accessor read-write))
     (single-slot balcon
 ;+      (comment "Booleano que indica si la vivienda tiene balcón")
         (type SYMBOL)
         (allowed-values FALSE TRUE)
 ;+      (cardinality 1 1)
         (create-accessor read-write))
-    (single-slot sol
-;+      (comment "Indica en qué momento del dia la vivienda recibe impacto de la luz solar")
-        (type SYMBOL)
-        (allowed-values manana tarde todo-el-dia)
+    (single-slot altura-maxima
+;+      (comment "Número que indica el piso más alto del edificio en caso de ser un piso.")
+        (type INTEGER)
 ;+      (cardinality 0 1)
-        (create-accessor read-write))
-    (single-slot mascotas-permitidas
-;+      (comment "Booleano que indica si las mascotas están prohibidas en esta vivienda")
-        (type SYMBOL)
-        (allowed-values FALSE TRUE)
-;+      (cardinality 1 1)
         (create-accessor read-write))
     (single-slot amueblado
 ;+      (comment "Booleano que indica si la vivienda está amueblada")
@@ -73,37 +53,17 @@
         (allowed-values FALSE TRUE)
 ;+      (cardinality 1 1)
         (create-accessor read-write))
-    (single-slot dormitorios-dobles
-;+      (comment "Dormitorios dobles de la vivienda")
+    (single-slot Y
         (type INTEGER)
-        (default 0)
-;+      (cardinality 1 1)
+;+      (cardinality 0 1)
         (create-accessor read-write))
-    (single-slot dormitorios-simples
-;+      (comment "Dormitorios simples de la vivienda")
+    (single-slot altura
+;+      (comment "Altura del piso")
         (type INTEGER)
-        (default 0)
-;+      (cardinality 1 1)
-        (create-accessor read-write))
-    (single-slot aire-acondicionado
-;+      (comment "Booleano que indica si la vivienda tiene aire acondicionado")
-        (type SYMBOL)
-        (allowed-values FALSE TRUE)
-;+      (cardinality 1 1)
-        (create-accessor read-write))
-    (single-slot tipo
-        (type SYMBOL)
-        (allowed-values piso duplex unifamiliar)
-;+      (cardinality 1 1)
+;+      (cardinality 0 1)
         (create-accessor read-write))
     (single-slot piscina-comunitaria
 ;+      (comment "Booleano que indica si la vivienda tiene piscina comunitaria con acceso a ella")
-        (type SYMBOL)
-        (allowed-values FALSE TRUE)
-;+      (cardinality 1 1)
-        (create-accessor read-write))
-    (single-slot calefaccion
-;+      (comment "Booleano que indica si la vivienda tiene calefacción")
         (type SYMBOL)
         (allowed-values FALSE TRUE)
 ;+      (cardinality 1 1)
@@ -114,15 +74,56 @@
         (allowed-values FALSE TRUE)
 ;+      (cardinality 1 1)
         (create-accessor read-write))
+    (single-slot X
+        (type INTEGER)
+;+      (cardinality 0 1)
+        (create-accessor read-write))
+    (single-slot tipo
+        (type SYMBOL)
+        (allowed-values piso duplex unifamiliar)
+;+      (cardinality 1 1)
+        (create-accessor read-write))
+    (single-slot dormitorios-simples
+;+      (comment "Número de dormitorios simples de la vivienda")
+        (type INTEGER)
+        (default 0)
+;+      (cardinality 1 1)
+        (create-accessor read-write))
+    (single-slot aire-acondicionado
+;+      (comment "Booleano que indica si la vivienda tiene aire acondicionado")
+        (type SYMBOL)
+        (allowed-values FALSE TRUE)
+;+      (cardinality 1 1)
+        (create-accessor read-write))
+    (single-slot ascensor
+;+      (comment "Booleano que indica si tiene ascensor en caso de que el tipo de vivienda sea: piso. En caso contrario, este slot no contiene información útil.")
+        (type SYMBOL)
+        (allowed-values FALSE TRUE)
+        (default FALSE)
+;+      (cardinality 0 1)
+        (create-accessor read-write))
     (single-slot precio
 ;+      (comment "Precio mensual")
         (type FLOAT)
 ;+      (cardinality 1 1)
         (create-accessor read-write))
-    (single-slot localizacion
-;+      (comment "Localización de la vivienda (coordenadas X e Y)")
+    (single-slot localizacion-servicio
+;+      (comment "Localización del servicio")
         (type INSTANCE)
 ;+      (allowed-classes Coordenadas)
+;+      (cardinality 1 1)
+        (create-accessor read-write))
+    (single-slot dormitorios-dobles
+;+      (comment "Número de dormitorios dobles de la vivienda")
+        (type INTEGER)
+        (default 0)
+;+      (cardinality 1 1)
+        (create-accessor read-write))
+    (single-slot adaptada-mobilidad-reducida
+;+      (comment "Booleano que indica si la casa esta adaptada para personas con mobilidad reducida")
+        (type SYMBOL)
+        (allowed-values FALSE TRUE)
+        (default FALSE)
 ;+      (cardinality 1 1)
         (create-accessor read-write))
     (single-slot electrodomesticos
@@ -131,40 +132,70 @@
         (allowed-values FALSE TRUE)
 ;+      (cardinality 1 1)
         (create-accessor read-write))
+    (single-slot calefaccion
+;+      (comment "Booleano que indica si la vivienda tiene calefacción")
+        (type SYMBOL)
+        (allowed-values FALSE TRUE)
+;+      (cardinality 1 1)
+        (create-accessor read-write))
+    (single-slot terraza
+;+      (comment "Booleano que indica si la vivienda tiene terraza")
+        (type SYMBOL)
+        (allowed-values FALSE TRUE)
+;+      (cardinality 1 1)
+        (create-accessor read-write))
+    (single-slot mascotas-permitidas
+;+      (comment "Booleano que indica si las mascotas están prohibidas en esta vivienda")
+        (type SYMBOL)
+        (allowed-values FALSE TRUE)
+;+      (cardinality 1 1)
+        (create-accessor read-write))
+    (single-slot localizacion
+;+      (comment "Localización de la vivienda (coordenadas X e Y)")
+        (type INSTANCE)
+;+      (allowed-classes Coordenadas)
+;+      (cardinality 1 1)
+        (create-accessor read-write))
     (single-slot area
 ;+      (comment "Superfície en metros cuadrados de la vivienda")
         (type FLOAT)
+;+      (cardinality 1 1)
+        (create-accessor read-write))
+    (single-slot tipo-servicio
+;+      (comment "Tipo de servicio que se ofrece en una ciudad. Puede ser de tipo:\n- Centro médico\n- Colegio\n- Supermercado\n- Hipermercado\n- Zona verde\n- Discoteca\n- Transporte público\n- Gimnasio\n- Biblioteca\n- Restaurante")
+        (type SYMBOL)
+        (allowed-values centro-medico colegio supermercado hipermercado zona-verde discoteca transporte-publico gimnasio biblioteca restaurante)
 ;+      (cardinality 1 1)
         (create-accessor read-write)))
 
 (defclass Vivienda "Clase encargada de almacenar toda la información útil de una vivienda que se utilizará para contrastar con las preferencias del usuario"
     (is-a USER)
     (role concrete)
-    (single-slot aire-acondicionado
-;+      (comment "Booleano que indica si la vivienda tiene aire acondicionado")
+    (single-slot adaptada-mobilidad-reducida
+;+      (comment "Booleano que indica si la casa esta adaptada para personas con mobilidad reducida")
         (type SYMBOL)
         (allowed-values FALSE TRUE)
+        (default FALSE)
 ;+      (cardinality 1 1)
         (create-accessor read-write))
-    (single-slot tipo
-        (type SYMBOL)
-        (allowed-values piso duplex unifamiliar)
+    (single-slot precio
+;+      (comment "Precio mensual")
+        (type FLOAT)
 ;+      (cardinality 1 1)
+        (create-accessor read-write))
+    (single-slot sol
+;+      (comment "Indica en qué momento del dia la vivienda recibe impacto de la luz solar")
+        (type SYMBOL)
+        (allowed-values manana tarde todo-el-dia)
+;+      (cardinality 0 1)
+        (create-accessor read-write))
+    (single-slot altura
+;+      (comment "Altura del piso")
+        (type INTEGER)
+;+      (cardinality 0 1)
         (create-accessor read-write))
     (single-slot electrodomesticos
 ;+      (comment "Booleano que indica si la vivienda incluye electrodomésticos")
-        (type SYMBOL)
-        (allowed-values FALSE TRUE)
-;+      (cardinality 1 1)
-        (create-accessor read-write))
-    (single-slot terraza
-;+      (comment "Booleano que indica si la vivienda tiene terraza")
-        (type SYMBOL)
-        (allowed-values FALSE TRUE)
-;+      (cardinality 1 1)
-        (create-accessor read-write))
-    (single-slot piscina-comunitaria
-;+      (comment "Booleano que indica si la vivienda tiene piscina comunitaria con acceso a ella")
         (type SYMBOL)
         (allowed-values FALSE TRUE)
 ;+      (cardinality 1 1)
@@ -175,8 +206,14 @@
         (allowed-values FALSE TRUE)
 ;+      (cardinality 1 1)
         (create-accessor read-write))
-    (single-slot balcon
-;+      (comment "Booleano que indica si la vivienda tiene balcón")
+    (single-slot piscina-comunitaria
+;+      (comment "Booleano que indica si la vivienda tiene piscina comunitaria con acceso a ella")
+        (type SYMBOL)
+        (allowed-values FALSE TRUE)
+;+      (cardinality 1 1)
+        (create-accessor read-write))
+    (single-slot terraza
+;+      (comment "Booleano que indica si la vivienda tiene terraza")
         (type SYMBOL)
         (allowed-values FALSE TRUE)
 ;+      (cardinality 1 1)
@@ -187,55 +224,10 @@
         (allowed-values FALSE TRUE)
 ;+      (cardinality 1 1)
         (create-accessor read-write))
-    (single-slot altura
-;+      (comment "Altura del piso")
-        (type INTEGER)
-;+      (cardinality 0 1)
-        (create-accessor read-write))
-    (single-slot parking
-;+      (comment "Booleano que indica si la vivienda incluye plaza de parking")
-        (type SYMBOL)
-        (allowed-values FALSE TRUE)
-;+      (cardinality 1 1)
-        (create-accessor read-write))
-    (single-slot sol
-;+      (comment "Indica en qué momento del dia la vivienda recibe impacto de la luz solar")
-        (type SYMBOL)
-        (allowed-values manana tarde todo-el-dia)
-;+      (cardinality 0 1)
-        (create-accessor read-write))
     (single-slot mascotas-permitidas
 ;+      (comment "Booleano que indica si las mascotas están prohibidas en esta vivienda")
         (type SYMBOL)
         (allowed-values FALSE TRUE)
-;+      (cardinality 1 1)
-        (create-accessor read-write))
-    (single-slot area
-;+      (comment "Superfície en metros cuadrados de la vivienda")
-        (type FLOAT)
-;+      (cardinality 1 1)
-        (create-accessor read-write))
-    (single-slot amueblado
-;+      (comment "Booleano que indica si la vivienda está amueblada")
-        (type SYMBOL)
-        (allowed-values FALSE TRUE)
-;+      (cardinality 1 1)
-        (create-accessor read-write))
-    (single-slot dormitorios-dobles
-;+      (comment "Dormitorios dobles de la vivienda")
-        (type INTEGER)
-        (default 0)
-;+      (cardinality 1 1)
-        (create-accessor read-write))
-    (single-slot dormitorios-simples
-;+      (comment "Dormitorios simples de la vivienda")
-        (type INTEGER)
-        (default 0)
-;+      (cardinality 1 1)
-        (create-accessor read-write))
-    (single-slot precio
-;+      (comment "Precio mensual")
-        (type FLOAT)
 ;+      (cardinality 1 1)
         (create-accessor read-write))
     (single-slot localizacion
@@ -243,9 +235,67 @@
         (type INSTANCE)
 ;+      (allowed-classes Coordenadas)
 ;+      (cardinality 1 1)
+        (create-accessor read-write))
+    (single-slot parking
+;+      (comment "Booleano que indica si la vivienda incluye plaza de parking")
+        (type SYMBOL)
+        (allowed-values FALSE TRUE)
+;+      (cardinality 1 1)
+        (create-accessor read-write))
+    (single-slot balcon
+;+      (comment "Booleano que indica si la vivienda tiene balcón")
+        (type SYMBOL)
+        (allowed-values FALSE TRUE)
+;+      (cardinality 1 1)
+        (create-accessor read-write))
+    (single-slot dormitorios-dobles
+;+      (comment "Número de dormitorios dobles de la vivienda")
+        (type INTEGER)
+        (default 0)
+;+      (cardinality 1 1)
+        (create-accessor read-write))
+    (single-slot area
+;+      (comment "Superfície en metros cuadrados de la vivienda")
+        (type FLOAT)
+;+      (cardinality 1 1)
+        (create-accessor read-write))
+    (single-slot tipo
+        (type SYMBOL)
+        (allowed-values piso duplex unifamiliar)
+;+      (cardinality 1 1)
+        (create-accessor read-write))
+    (single-slot dormitorios-simples
+;+      (comment "Número de dormitorios simples de la vivienda")
+        (type INTEGER)
+        (default 0)
+;+      (cardinality 1 1)
+        (create-accessor read-write))
+    (single-slot altura-maxima
+;+      (comment "Número que indica el piso más alto del edificio en caso de ser un piso.")
+        (type INTEGER)
+;+      (cardinality 0 1)
+        (create-accessor read-write))
+    (single-slot amueblado
+;+      (comment "Booleano que indica si la vivienda está amueblada")
+        (type SYMBOL)
+        (allowed-values FALSE TRUE)
+;+      (cardinality 1 1)
+        (create-accessor read-write))
+    (single-slot aire-acondicionado
+;+      (comment "Booleano que indica si la vivienda tiene aire acondicionado")
+        (type SYMBOL)
+        (allowed-values FALSE TRUE)
+;+      (cardinality 1 1)
+        (create-accessor read-write))
+    (single-slot ascensor
+;+      (comment "Booleano que indica si tiene ascensor en caso de que el tipo de vivienda sea: piso. En caso contrario, este slot no contiene información útil.")
+        (type SYMBOL)
+        (allowed-values FALSE TRUE)
+        (default FALSE)
+;+      (cardinality 0 1)
         (create-accessor read-write)))
 
-(defclass Coordenadas "Clase coordenadas que contiene información sobre los ejes X e Y de otra clase"
+(defclass Coordenadas "Clase coordenadas que contiene información sobre los ejes X e Y de otra clase."
     (is-a USER)
     (role concrete)
     (single-slot Y
@@ -255,6 +305,22 @@
     (single-slot X
         (type INTEGER)
 ;+      (cardinality 0 1)
+        (create-accessor read-write)))
+
+(defclass Servicio "Clase que se encarga de almacenar la posición y el tipo de servicio que se ofrece en una población"
+    (is-a USER)
+    (role concrete)
+    (single-slot localizacion-servicio
+;+      (comment "Localización del servicio")
+        (type INSTANCE)
+;+      (allowed-classes Coordenadas)
+;+      (cardinality 1 1)
+        (create-accessor read-write))
+    (single-slot tipo-servicio
+;+      (comment "Tipo de servicio que se ofrece en una ciudad. Puede ser de tipo:\n- Centro médico\n- Colegio\n- Supermercado\n- Hipermercado\n- Zona verde\n- Discoteca\n- Transporte público\n- Gimnasio\n- Biblioteca\n- Restaurante")
+        (type SYMBOL)
+        (allowed-values centro-medico colegio supermercado hipermercado zona-verde discoteca transporte-publico gimnasio biblioteca restaurante)
+;+      (cardinality 1 1)
         (create-accessor read-write)))
 
 (defclass Recomendacion "Clase para validar requerimientos y preferencias"
@@ -275,7 +341,150 @@
 ;;                      INSTANCIAS
 ;;-------------------------------------------------------------------------------------------------------------
 
-(definstances MAIN::instances
+(definstances MAIN::instances 
+
+    ([ontologia_Class10] of  Vivienda
+
+    (adaptada-mobilidad-reducida FALSE)
+    (aire-acondicionado TRUE)
+    (altura 3)
+    (altura-maxima 8)
+    (amueblado TRUE)
+    (area 300.0)
+    (ascensor TRUE)
+    (balcon TRUE)
+    (buenas-vistas TRUE)
+    (calefaccion TRUE)
+    (dormitorios-dobles 1)
+    (dormitorios-simples 3)
+    (electrodomesticos TRUE)
+    (localizacion [ontologia_Class11])
+    (mascotas-permitidas TRUE)
+    (parking TRUE)
+    (piscina-comunitaria FALSE)
+    (precio 500.0)
+    (sol manana)
+    (terraza TRUE)
+    (tipo piso))
+
+    ([ontologia_Class10016] of  Vivienda
+
+        (adaptada-mobilidad-reducida FALSE)
+        (aire-acondicionado FALSE)
+        (altura 12)
+        (altura-maxima 12)
+        (amueblado TRUE)
+        (area 300.0)
+        (ascensor TRUE)
+        (balcon TRUE)
+        (buenas-vistas TRUE)
+        (calefaccion TRUE)
+        (dormitorios-dobles 2)
+        (dormitorios-simples 2)
+        (electrodomesticos TRUE)
+        (localizacion [ontologia_Class10018])
+        (mascotas-permitidas TRUE)
+        (parking FALSE)
+        (piscina-comunitaria TRUE)
+        (precio 400.0)
+        (sol todo-el-dia)
+        (terraza FALSE)
+        (tipo duplex))
+
+    ([ontologia_Class10018] of  Coordenadas
+
+        (X 0)
+        (Y 12))
+
+    ([ontologia_Class10019] of  Vivienda
+
+        (adaptada-mobilidad-reducida FALSE)
+        (aire-acondicionado FALSE)
+        (altura 10)
+        (altura-maxima 10)
+        (amueblado FALSE)
+        (area 400.0)
+        (ascensor FALSE)
+        (balcon TRUE)
+        (buenas-vistas TRUE)
+        (calefaccion FALSE)
+        (dormitorios-dobles 1)
+        (dormitorios-simples 5)
+        (electrodomesticos TRUE)
+        (localizacion [ontologia_Class10020])
+        (mascotas-permitidas FALSE)
+        (parking TRUE)
+        (piscina-comunitaria TRUE)
+        (precio 800.0)
+        (sol todo-el-dia)
+        (terraza TRUE)
+        (tipo piso))
+
+    ([ontologia_Class10020] of  Coordenadas
+
+        (X 2)
+        (Y 32))
+
+    ([ontologia_Class11] of  Coordenadas
+
+        (X 12)
+        (Y 84))
+
+    ([ontologia_Class12] of  Vivienda
+
+        (adaptada-mobilidad-reducida FALSE)
+        (aire-acondicionado FALSE)
+        (altura 10)
+        (altura-maxima 10)
+        (amueblado FALSE)
+        (area 200.0)
+        (ascensor FALSE)
+        (balcon FALSE)
+        (buenas-vistas TRUE)
+        (calefaccion TRUE)
+        (dormitorios-dobles 1)
+        (dormitorios-simples 2)
+        (electrodomesticos FALSE)
+        (localizacion [ontologia_Class13])
+        (mascotas-permitidas TRUE)
+        (parking FALSE)
+        (piscina-comunitaria TRUE)
+        (precio 150.0)
+        (terraza TRUE)
+        (tipo piso))
+
+    ([ontologia_Class13] of  Coordenadas
+
+        (X 22)
+        (Y 92))
+
+    ([ontologia_Class14] of  Vivienda
+
+        (adaptada-mobilidad-reducida TRUE)
+        (aire-acondicionado TRUE)
+        (amueblado TRUE)
+        (area 600.0)
+        (ascensor FALSE)
+        (balcon FALSE)
+        (buenas-vistas TRUE)
+        (calefaccion TRUE)
+        (dormitorios-dobles 5)
+        (dormitorios-simples 4)
+        (electrodomesticos TRUE)
+        (localizacion [ontologia_Class15])
+        (mascotas-permitidas FALSE)
+        (parking TRUE)
+        (piscina-comunitaria TRUE)
+        (precio 2500.0)
+        (sol todo-el-dia)
+        (terraza FALSE)
+        (tipo unifamiliar))
+
+    ([ontologia_Class15] of  Coordenadas
+
+        (X 15)
+        (Y 24))
+
     ([ontologia_Class16] of  Coordenadas
 
         (X 20)
@@ -293,61 +502,387 @@
 
     ([ontologia_Class19] of  Vivienda
 
+        (adaptada-mobilidad-reducida TRUE)
         (aire-acondicionado TRUE)
-        (area 200.0)
-        (balcon FALSE)
-        (dormitorios-dobles 1)
-        (piscina-comunitaria FALSE)
+        (altura 1)
+        (altura-maxima 10)
         (amueblado TRUE)
-        (electrodomesticos FALSE)
+        (area 200.0)
+        (ascensor TRUE)
+        (balcon FALSE)
+        (buenas-vistas FALSE)
         (calefaccion TRUE)
-        (tipo duplex)
+        (dormitorios-dobles 2)
+        (dormitorios-simples 3)
+        (electrodomesticos FALSE)
         (localizacion [ontologia_Class16])
+        (mascotas-permitidas FALSE)
         (parking FALSE)
-        (mascotas-permitidas TRUE)
-        (precio 200.0)
+        (piscina-comunitaria FALSE)
+        (precio 300.0)
+        (sol manana)
         (terraza FALSE)
-        (buenas-vistas FALSE))
+        (tipo duplex))
 
     ([ontologia_Class20] of  Vivienda
 
+        (adaptada-mobilidad-reducida TRUE)
         (aire-acondicionado TRUE)
-        (area 500.0)
-        (balcon TRUE)
-        (dormitorios-dobles 2)
-        (dormitorios-simples 3)
-        (piscina-comunitaria FALSE)
         (amueblado TRUE)
-        (electrodomesticos TRUE)
+        (area 500.0)
+        (ascensor FALSE)
+        (balcon TRUE)
+        (buenas-vistas TRUE)
         (calefaccion TRUE)
-        (sol todo-el-dia)
-        (tipo unifamiliar)
+        (dormitorios-dobles 3)
+        (dormitorios-simples 6)
+        (electrodomesticos TRUE)
         (localizacion [ontologia_Class17])
+        (mascotas-permitidas TRUE)
         (parking TRUE)
-        (mascotas-permitidas FALSE)
+        (piscina-comunitaria TRUE)
         (precio 2000.0)
+        (sol todo-el-dia)
         (terraza TRUE)
-        (buenas-vistas TRUE))
+        (tipo unifamiliar))
 
     ([ontologia_Class21] of  Vivienda
 
+        (adaptada-mobilidad-reducida FALSE)
         (aire-acondicionado FALSE)
+        (amueblado TRUE)
         (area 75.0)
         (balcon TRUE)
+        (buenas-vistas FALSE)
+        (calefaccion TRUE)
         (dormitorios-dobles 1)
-        (dormitorios-simples 2)
-        (piscina-comunitaria FALSE)
-        (amueblado FALSE)
+        (dormitorios-simples 1)
         (electrodomesticos FALSE)
-        (calefaccion FALSE)
-        (sol todo-el-dia)
-        (tipo piso)
         (localizacion [ontologia_Class18])
-        (parking FALSE)
         (mascotas-permitidas TRUE)
+        (parking FALSE)
+        (piscina-comunitaria FALSE)
         (precio 100.0)
+        (sol todo-el-dia)
         (terraza TRUE)
-        (buenas-vistas FALSE))
+        (tipo duplex))
+
+    ([ontologia_Class5] of  Vivienda
+
+        (adaptada-mobilidad-reducida TRUE)
+        (aire-acondicionado TRUE)
+        (altura 5)
+        (amueblado TRUE)
+        (area 300.0)
+        (ascensor TRUE)
+        (balcon TRUE)
+        (buenas-vistas TRUE)
+        (calefaccion TRUE)
+        (dormitorios-dobles 1)
+        (dormitorios-simples 3)
+        (electrodomesticos TRUE)
+        (localizacion [ontologia_Class6])
+        (mascotas-permitidas TRUE)
+        (parking TRUE)
+        (piscina-comunitaria FALSE)
+        (precio 1000.0)
+        (sol tarde)
+        (terraza TRUE)
+        (tipo duplex))
+
+    ([ontologia_Class6] of  Coordenadas
+
+        (X 10)
+        (Y 12))
+
+    ([ontologia_Class7] of  Vivienda
+
+        (adaptada-mobilidad-reducida FALSE)
+        (aire-acondicionado FALSE)
+        (altura 9)
+        (altura-maxima 10)
+        (amueblado FALSE)
+        (area 25.0)
+        (ascensor TRUE)
+        (balcon FALSE)
+        (buenas-vistas FALSE)
+        (calefaccion TRUE)
+        (dormitorios-dobles 0)
+        (dormitorios-simples 1)
+        (electrodomesticos FALSE)
+        (localizacion [ontologia_Class8])
+        (mascotas-permitidas TRUE)
+        (parking FALSE)
+        (piscina-comunitaria FALSE)
+        (precio 50.0)
+        (terraza FALSE)
+        (tipo piso))
+
+    ([ontologia_Class8] of  Coordenadas
+
+        (X 86)
+        (Y 33))
+
+    ([ontologia_v2_Class10021] of  Servicio
+
+        (localizacion-servicio [ontologia_v2_Class10022])
+        (tipo-servicio centro-medico))
+
+    ([ontologia_v2_Class10022] of  Coordenadas
+
+        (X 37)
+        (Y 22))
+
+    ([ontologia_v2_Class10023] of  Servicio
+
+        (localizacion-servicio [ontologia_v2_Class10024])
+        (tipo-servicio discoteca))
+
+    ([ontologia_v2_Class10024] of  Coordenadas
+
+        (X 85)
+        (Y 30))
+
+    ([ontologia_v2_Class10025] of  Servicio
+
+        (localizacion-servicio [ontologia_v2_Class10028])
+        (tipo-servicio supermercado))
+
+    ([ontologia_v2_Class10026] of  Servicio
+
+        (localizacion-servicio [ontologia_v2_Class10027])
+        (tipo-servicio colegio))
+
+    ([ontologia_v2_Class10027] of  Coordenadas
+
+        (X 0)
+        (Y 8))
+
+    ([ontologia_v2_Class10028] of  Coordenadas
+
+        (X 15)
+        (Y 16))
+
+    ([ontologia_v2_Class10029] of  Servicio
+
+        (localizacion-servicio [ontologia_v2_Class10030])
+        (tipo-servicio hipermercado))
+
+    ([ontologia_v2_Class10030] of  Coordenadas
+
+        (X 31)
+        (Y 76))
+
+    ([ontologia_v2_Class10031] of  Servicio
+
+        (localizacion-servicio [ontologia_v2_Class10032])
+        (tipo-servicio zona-verde))
+
+    ([ontologia_v2_Class10032] of  Coordenadas
+
+        (X 21)
+        (Y 56))
+
+    ([ontologia_v2_Class10033] of  Servicio
+
+        (localizacion-servicio [ontologia_v2_Class10034])
+        (tipo-servicio transporte-publico))
+
+    ([ontologia_v2_Class10034] of  Coordenadas
+
+        (X 74)
+        (Y 25))
+
+    ([ontologia_v2_Class10035] of  Servicio
+
+        (localizacion-servicio [ontologia_v2_Class10036])
+        (tipo-servicio gimnasio))
+
+    ([ontologia_v2_Class10036] of  Coordenadas
+
+        (X 65)
+        (Y 13))
+
+    ([ontologia_v2_Class10037] of  Servicio
+
+        (localizacion-servicio [ontologia_v2_Class10038])
+        (tipo-servicio biblioteca))
+
+    ([ontologia_v2_Class10038] of  Coordenadas
+
+        (X 75)
+        (Y 32))
+
+    ([ontologia_v2_Class10039] of  Servicio
+
+        (localizacion-servicio [ontologia_v2_Class10040])
+        (tipo-servicio restaurante))
+
+    ([ontologia_v2_Class10040] of  Coordenadas
+
+        (X 43)
+        (Y 75))
+
+    ([ontologia_v2_Class10041] of  Servicio
+
+        (localizacion-servicio [ontologia_v2_Class10042])
+        (tipo-servicio centro-medico))
+
+    ([ontologia_v2_Class10042] of  Coordenadas
+
+        (X 67)
+        (Y 32))
+
+    ([ontologia_v2_Class10043] of  Servicio
+
+        (localizacion-servicio [ontologia_v2_Class10044])
+        (tipo-servicio colegio))
+
+    ([ontologia_v2_Class10044] of  Coordenadas
+
+        (X 73)
+        (Y 22))
+
+    ([ontologia_v2_Class10045] of  Servicio
+
+        (localizacion-servicio [ontologia_v2_Class10046])
+        (tipo-servicio supermercado))
+
+    ([ontologia_v2_Class10046] of  Coordenadas
+
+        (X 70)
+        (Y 24))
+
+    ([ontologia_v2_Class10047] of  Servicio
+
+        (localizacion-servicio [ontologia_v2_Class10048])
+        (tipo-servicio hipermercado))
+
+    ([ontologia_v2_Class10048] of  Coordenadas
+
+        (X 76)
+        (Y 31))
+
+    ([ontologia_v2_Class10049] of  Servicio
+
+        (localizacion-servicio [ontologia_v2_Class10050])
+        (tipo-servicio zona-verde))
+
+    ([ontologia_v2_Class10050] of  Coordenadas
+
+        (X 52)
+        (Y 31))
+
+    ([ontologia_v2_Class10051] of  Servicio
+
+        (localizacion-servicio [ontologia_v2_Class10052])
+        (tipo-servicio discoteca))
+
+    ([ontologia_v2_Class10052] of  Coordenadas
+
+        (X 46)
+        (Y 21))
+
+    ([ontologia_v2_Class10053] of  Servicio
+
+        (localizacion-servicio [ontologia_v2_Class10054])
+        (tipo-servicio transporte-publico))
+
+    ([ontologia_v2_Class10054] of  Coordenadas
+
+        (X 25)
+        (Y 74))
+
+    ([ontologia_v2_Class10055] of  Servicio
+
+        (localizacion-servicio [ontologia_v2_Class10056])
+        (tipo-servicio gimnasio))
+
+    ([ontologia_v2_Class10056] of  Coordenadas
+
+        (X 33)
+        (Y 94))
+
+    ([ontologia_v2_Class10057] of  Servicio
+
+        (localizacion-servicio [ontologia_v2_Class10058])
+        (tipo-servicio biblioteca))
+
+    ([ontologia_v2_Class10058] of  Coordenadas
+
+        (X 12)
+        (Y 54))
+
+    ([ontologia_v2_Class10059] of  Servicio
+
+        (localizacion-servicio [ontologia_v2_Class10060])
+        (tipo-servicio restaurante))
+
+    ([ontologia_v2_Class10060] of  Coordenadas
+
+        (X 67)
+        (Y 13))
+
+    ([ontologia_v2_Class10061] of  Servicio
+
+        (localizacion-servicio [ontologia_v2_Class10062])
+        (tipo-servicio supermercado))
+
+    ([ontologia_v2_Class10062] of  Coordenadas
+
+        (X 41)
+        (Y 18))
+
+    ([ontologia_v2_Class10063] of  Servicio
+
+        (localizacion-servicio [ontologia_v2_Class10064])
+        (tipo-servicio hipermercado))
+
+    ([ontologia_v2_Class10064] of  Coordenadas
+
+        (X 10)
+        (Y 13))
+
+    ([ontologia_v2_Class10065] of  Servicio
+
+        (localizacion-servicio [ontologia_v2_Class10066])
+        (tipo-servicio zona-verde))
+
+    ([ontologia_v2_Class10066] of  Coordenadas
+
+        (X 15)
+        (Y 10))
+
+    ([ontologia_v2_Class10067] of  Servicio
+
+        (localizacion-servicio [ontologia_v2_Class10068])
+        (tipo-servicio transporte-publico))
+
+    ([ontologia_v2_Class10068] of  Coordenadas
+
+        (X 50)
+        (Y 2))
+
+    ([ontologia_v2_Class10069] of  Servicio
+
+        (localizacion-servicio [ontologia_v2_Class10070])
+        (tipo-servicio transporte-publico))
+
+    ([ontologia_v2_Class10070] of  Coordenadas
+
+        (X 90)
+        (Y 12))
+
+    ([ontologia_v2_Class10071] of  Servicio
+
+        (localizacion-servicio [ontologia_v2_Class10072])
+        (tipo-servicio transporte-publico))
+
+    ([ontologia_v2_Class10072] of  Coordenadas
+
+        (X 1)
+        (Y 10))
+
 )
 
 ;;-------------------------------------------------------------------------------------------------------------
