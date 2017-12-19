@@ -1,0 +1,138 @@
+MUY RECOMENDABLES
+-----------------------------------
+Localización: (10, 12)
+Precio: 1000.000000
+Superficie: 300.000000
+Tipo de vivienda: duplex
+Altura: 5 / 5
+Dormitorios dobles: 1
+Dormitorios simples: 3
+Terraza: TRUE
+Balcón: TRUE
+Soleado: TARDE
+Amueblado: TRUE
+Electrodomésticos: TRUE
+Aire acondicionado: TRUE
+Calefacción: TRUE
+Piscina: FALSE
+Ascensor: TRUE
+Adaptada para movilidad reducida: TRUE
+Acepta mascotas: TRUE
+Parking incluído: TRUE
+Características positivas:
+- Los metros cuadrados superan el doble del mínimo requerido
+- La vivienda es un ático
+- La vivienda tiene buenas vistas
+- Hay cerca una o más zonas verdes
+- Hay cerca uno o más centros médicos
+- Hay cerca uno o más hipermercados
+- Hay cerca uno o más supermercados
+- Hay 2 o más dormitorios adicionales a los requeridos
+- Tiene balcón o terraza aunque no lo haya pedido
+- Permite el acceso a las mascotas aunque no lo haya solicitado
+-----------------------------------
+
+PARCIALMENTE ADECUADAS
+-----------------------------------
+Localización: (20, 30)
+Precio: 300.000000
+Superficie: 200.000000
+Tipo de vivienda: duplex
+Altura: 1 / 10
+Dormitorios dobles: 2
+Dormitorios simples: 3
+Terraza: FALSE
+Balcón: FALSE
+Soleado: MANANA
+Amueblado: TRUE
+Electrodomesticos: FALSE
+Aire acondicionado: TRUE
+Calefacción: TRUE
+Piscina: FALSE
+Ascensor: TRUE
+Adaptada para mobilidad reducida: TRUE
+Acepta mascotas: FALSE
+Parking incluído: FALSE
+Requisitos no cumplidos pero que podrían ser aceptables:
+- No se cumplen las restricciones de amueblado o electrodomesticos
+Características positivas:
+- Precio bajo
+- Los metros cuadrados superan el doble del mínimo requerido
+- Hay cerca una o más zonas verdes
+- Hay cerca uno o más centros médicos
+- Hay cerca uno o más hipermercados
+- Hay cerca uno o más supermercados
+- Hay 2 o más dormitorios adicionales a los requeridos
+-----------------------------------
+-----------------------------------
+Localización: (0, 12)
+Precio: 400.000000
+Superficie: 300.000000
+Tipo de vivienda: duplex
+Altura: 12 / 12
+Dormitorios dobles: 2
+Dormitorios simples: 2
+Terraza: FALSE
+Balcón: TRUE
+Soleado: TODO-EL-DIA
+Amueblado: TRUE
+Electrodomesticos: TRUE
+Aire acondicionado: FALSE
+Calefacción: TRUE
+Piscina: TRUE
+Ascensor: TRUE
+Adaptada para mobilidad reducida: FALSE
+Acepta mascotas: TRUE
+Parking incluído: FALSE
+Requisitos no cumplidos pero que podrían ser aceptables:
+- No se cumplen las restricciones de calefacción o aire acondicionado
+- No está adaptada para mobilidad reducida
+Características positivas:
+- Precio bajo
+- Los metros cuadrados superan el doble del mínimo requerido
+- La vivienda es soleada todo el día
+- La vivienda es un ático
+- La vivienda tiene buenas vistas
+- Hay cerca una o más zonas verdes
+- Hay cerca uno o más centros médicos
+- Hay cerca uno o más hipermercados
+- Hay cerca uno o más supermercados
+- Hay 2 o más dormitorios adicionales a los requeridos
+- Tiene balcón o terraza aunque no lo haya pedido
+- Tiene piscina aunque no lo haya pedido
+- Permite el acceso a las mascotas aunque no lo haya solicitado
+-----------------------------------
+-----------------------------------
+Localización: (12, 84)
+Precio: 500.000000
+Superficie: 300.000000
+Tipo de vivienda: piso
+Altura: 3 / 8
+Dormitorios dobles: 1
+Dormitorios simples: 3
+Terraza: TRUE
+Balcón: TRUE
+Soleado: MANANA
+Amueblado: TRUE
+Electrodomesticos: TRUE
+Aire acondicionado: TRUE
+Calefacción: TRUE
+Piscina: FALSE
+Ascensor: TRUE
+Adaptada para mobilidad reducida: FALSE
+Acepta mascotas: TRUE
+Parking incluído: TRUE
+Requisitos no cumplidos pero que podrían ser aceptables:
+- No está adaptada para mobilidad reducida
+Características positivas:
+- Precio bajo
+- Los metros cuadrados superan el doble del mínimo requerido
+- La vivienda tiene buenas vistas
+- Hay cerca una o más zonas verdes
+- Hay cerca uno o más hipermercados
+- Hay cerca uno o más gimnasios
+- Hay cerca uno o más restaurantes
+- Hay 2 o más dormitorios adicionales a los requeridos
+- Tiene balcón o terraza aunque no lo haya pedido
+- Permite el acceso a las mascotas aunque no lo haya solicitado
+-----------------------------------
